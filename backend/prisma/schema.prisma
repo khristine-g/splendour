@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CLIENT
+  VENDOR
+  ADMIN
+}
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  password  String
+  name      String
+  phone     String?
+  role      Role      @default(CLIENT)
+  bookings  Booking[] 
+  createdAt DateTime  @default(now())
+}
+
+model Vendor {
+  id              String    @id @default(uuid())
+  name            String
+  category        String
+  tagline         String
+  description     String
+  avatar          String
+  coverImage      String
+  rating          Float     @default(0.0)
+  reviewCount     Int       @default(0)
+  startingPrice   Int
+  location        String
+  verified        Boolean   @default(false)
+  featured        Boolean   @default(false)
+  portfolio       String[]
+  joinedDate      String
+  completedEvents Int       @default(0)
+  services        Service[]
+  // --- ADDED RELATION TO BOOKINGS ---
+  bookings        Booking[] 
+}
+
+model Service {
+  id          String    @id @default(uuid())
+  title       String
+  description String
+  category    String
+  price       Int
+  priceType   String
+  duration    String?
+  image       String
+  rating      Float     @default(0.0)
+  reviewCount Int       @default(0)
+  inclusions  String[]
+  vendor      Vendor    @relation(fields: [vendorId], references: [id])
+  vendorId    String
+  bookings    Booking[]
+}
+
+model Booking {
+  id          String   @id @default(uuid())
+  status      String   @default("PENDING")
+  eventDate   DateTime
+  
+  // --- NEW FIELDS ---
+  totalAmount Float    @default(0.0) // Stores the price at the time of booking
+  
+  client      User     @relation(fields: [clientId], references: [id])
+  clientId    String
+  
+  service     Service  @relation(fields: [serviceId], references: [id])
+  serviceId   String
+
+  // --- NEW RELATION TO VENDOR ---
+  vendor      Vendor   @relation(fields: [vendorId], references: [id])
+  vendorId    String
+
+  createdAt   DateTime @default(now())
+}
