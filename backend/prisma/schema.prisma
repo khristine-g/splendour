@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
 }
 
 enum Role {
@@ -14,14 +14,16 @@ enum Role {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  email     String    @unique
-  password  String
-  name      String
-  phone     String?
-  role      Role      @default(CLIENT)
-  bookings  Booking[] 
-  createdAt DateTime  @default(now())
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String
+  name          String
+  phone         String?
+  role          Role           @default(CLIENT)
+  bookings      Booking[]
+  notifications Notification[]
+  createdAt     DateTime       @default(now())
+  vendorProfile Vendor?        // Relation to the Vendor profile
 }
 
 model Vendor {
@@ -41,9 +43,11 @@ model Vendor {
   portfolio       String[]
   joinedDate      String
   completedEvents Int       @default(0)
+  
+  // Relations
+  user            User      @relation(fields: [id], references: [id], onDelete: Cascade)
   services        Service[]
-  // --- ADDED RELATION TO BOOKINGS ---
-  bookings        Booking[] 
+  bookings        Booking[]
 }
 
 model Service {
@@ -58,18 +62,39 @@ model Service {
   rating      Float     @default(0.0)
   reviewCount Int       @default(0)
   inclusions  String[]
+  
+  // Relations
   vendor      Vendor    @relation(fields: [vendorId], references: [id])
   vendorId    String
   bookings    Booking[]
+  createdAt   DateTime  @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+model Transaction {
+  id            String   @id @default(cuid())
+  bookingId     String   @unique
+  booking       Booking  @relation(fields: [bookingId], references: [id])
+  amount        Float
+  status        String   @default("PENDING") // PENDING, COMPLETED, FAILED
+  providerRef   String?  // Reference from Intasend/Stripe
+  createdAt     DateTime @default(now())
 }
 
 model Booking {
   id          String   @id @default(uuid())
   status      String   @default("PENDING")
   eventDate   DateTime
-  
-  // --- NEW FIELDS ---
-  totalAmount Float    @default(0.0) // Stores the price at the time of booking
+  totalAmount Float    @default(0.0)
   
   client      User     @relation(fields: [clientId], references: [id])
   clientId    String
@@ -77,7 +102,6 @@ model Booking {
   service     Service  @relation(fields: [serviceId], references: [id])
   serviceId   String
 
-  // --- NEW RELATION TO VENDOR ---
   vendor      Vendor   @relation(fields: [vendorId], references: [id])
   vendorId    String
 

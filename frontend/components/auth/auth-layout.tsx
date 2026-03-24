@@ -34,16 +34,10 @@ export function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
               &ldquo;The perfect vendor discovery platform — it made planning our wedding an absolute joy.&rdquo;
             </blockquote>
             <div className="mt-4 flex items-center gap-3">
-              <Image
-                src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&q=80"
-                alt="Amara Johnson"
-                width={40}
-                height={40}
-                className="rounded-full object-cover"
-              />
+              
               <div>
                 <p className="font-medium">Amara Johnson</p>
-                <p className="text-sm text-primary-foreground/70">Wedding Client, Lagos</p>
+                <p className="text-sm text-primary-foreground/70">Wedding Client, Nairobi</p>
               </div>
             </div>
           </div>

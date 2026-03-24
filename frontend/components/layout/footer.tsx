@@ -36,7 +36,7 @@ export function Footer() {
               <span className="font-serif text-xl font-bold">Splendour Events</span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-primary-foreground/70">
-              The premier marketplace connecting clients with Africa&apos;s finest event professionals. Creating unforgettable experiences, one event at a time.
+              The premier marketplace connecting clients with Kenya&apos;s finest event professionals. Creating unforgettable experiences, one event at a time.
             </p>
             <div className="mt-6 flex gap-4">
               <a href="#" aria-label="Instagram" className="text-primary-foreground/60 transition-colors hover:text-accent">
@@ -56,11 +56,11 @@ export function Footer() {
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="h-4 w-4" />
-                <span>+234 800 SPLENDOUR</span>
+                <span>+254 728905634 SPLENDOUR</span>
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4" />
-                <span>Lagos, Nigeria</span>
+                <span>Kenya</span>
               </div>
             </div>
           </div>
@@ -89,7 +89,7 @@ export function Footer() {
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-primary-foreground/10 pt-8 text-sm text-primary-foreground/50 sm:flex-row">
           <p>&copy; {new Date().getFullYear()} Splendour Events. All rights reserved.</p>
-          <p>Built with care in Africa, for the world.</p>
+          <p>Built with care in Kenya, for the Kenya.</p>
         </div>
       </div>
     </footer>

@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import { Playfair_Display, Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
-import { AuthProvider } from '@/context/auth-context' // Added this
+import { AuthProvider } from '@/context/auth-context' 
+import { Toaster } from "@/components/ui/sonner"
 import './globals.css'
 
 const playfair = Playfair_Display({
@@ -32,6 +33,7 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <AuthProvider>
           {children}
+          <Toaster position="bottom-right" expand={false} richColors />
           <Analytics />
         </AuthProvider>
       </body>

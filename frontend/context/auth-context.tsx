@@ -1,7 +1,8 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import Cookies from 'js-cookie'
 
 interface User {
   id: string
@@ -24,26 +25,67 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
-  useEffect(() => {
-    // Check local storage on initial load
-    const savedUser = localStorage.getItem('user')
-    if (savedUser) {
-      setUser(JSON.parse(savedUser))
+  // 1. Initialize Auth on page load/refresh
+  const initializeAuth = useCallback(() => {
+    try {
+      const savedUser = localStorage.getItem('user')
+      const token = localStorage.getItem('token')
+
+      if (savedUser && token) {
+        const parsedUser = JSON.parse(savedUser)
+        setUser(parsedUser)
+        
+        // Sync cookie for Middleware/Server-side protection
+        Cookies.set('user-role', parsedUser.role, { expires: 7, path: '/' })
+      } else {
+        // Cleanup if data is missing
+        setUser(null)
+        Cookies.remove('user-role', { path: '/' })
+      }
+    } catch (error) {
+      console.error("Auth initialization error:", error)
+      localStorage.removeItem('user')
+      localStorage.removeItem('token')
+      Cookies.remove('user-role', { path: '/' })
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }, [])
 
+  useEffect(() => {
+    initializeAuth()
+  }, [initializeAuth])
+
+  // 2. Login Function
   const login = (userData: User, token: string) => {
+    // Save to LocalStorage for persistence
     localStorage.setItem('user', JSON.stringify(userData))
     localStorage.setItem('token', token)
+    
+    // Save to Cookie for Next.js Middleware
+    Cookies.set('user-role', userData.role, { expires: 7, path: '/' })
+    
+    // Update Global State
     setUser(userData)
+
+    // Redirect based on role immediately
+    if (userData.role === 'VENDOR') {
+      router.push('/vendor/dashboard')
+    } else if (userData.role === 'ADMIN') {
+      router.push('/admin/dashboard')
+    } else {
+      router.push('/client/dashboard')
+    }
   }
 
+  // 3. Logout Function
   const logout = () => {
     localStorage.removeItem('user')
     localStorage.removeItem('token')
+    Cookies.remove('user-role', { path: '/' })
+    
     setUser(null)
-    router.push('/')
+    router.push('/auth/login')
   }
 
   return (

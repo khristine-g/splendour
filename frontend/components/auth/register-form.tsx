@@ -2,28 +2,26 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Eye, EyeOff, Loader2, CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { cn } from '@/lib/utils'
-import { useAuth } from '@/context/auth-context' // 1. Import Auth Context
+import { useAuth } from '@/context/auth-context'
+import { toast } from 'sonner'
 
 export function RegisterForm() {
-  const { login } = useAuth() // 2. Grab login function
-  const searchParams = useSearchParams()
-  const router = useRouter()
-
-  // Use uppercase to match your Prisma Enum: Role { CLIENT, VENDOR }
-  const [role, setRole] = useState<'CLIENT' | 'VENDOR'>(
-    searchParams.get('role')?.toUpperCase() === 'VENDOR' ? 'VENDOR' : 'CLIENT',
-  )
+  const { login } = useAuth()
+  
+  // CAPSTONE SIMPLIFICATION: 
+  // Public registration is now only for CLIENTS. 
+  // Admins are created via seed, and Vendors are managed by Admin.
+  const role = 'CLIENT'
   
   const [form, setForm] = useState({ name: '', email: '', password: '', phone: '' })
   const [showPw, setShowPw] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isSuccess, setIsSuccess] = useState(false)
 
   const update = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [key]: e.target.value }))
@@ -39,106 +37,133 @@ export function RegisterForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...form,
-          role, 
+          role, // Hardcoded to 'CLIENT'
         }),
       })
 
       const data = await res.json()
 
       if (!res.ok) {
-        throw new Error(data.error || 'Registration failed')
+        throw new Error(data.error || data.message || 'Registration failed')
       }
 
-      // 3. Update global auth state immediately
+      setIsSuccess(true)
+      toast.success("Account created successfully!")
+
+      // Sync global auth state and redirect
       login(data.user, data.token)
 
-      // 4. Personalized redirect
-      if (role === 'VENDOR') {
-        router.push('/vendor/dashboard')
-      } else {
-        router.push('/') // Send clients to the home page to start browsing
-      }
-      
-      router.refresh()
     } catch (err: any) {
+      console.error("Signup error:", err.message)
       setError(err.message)
+      toast.error(err.message)
     } finally {
       setLoading(false)
     }
   }
 
+  if (isSuccess) {
+    return (
+      <div className="flex flex-col items-center justify-center py-10 text-center space-y-4">
+        <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
+          <CheckCircle2 className="h-6 w-6 text-green-600" />
+        </div>
+        <h2 className="text-xl font-bold">Welcome to Splendour!</h2>
+        <p className="text-muted-foreground text-sm">Redirecting you to your dashboard...</p>
+        <Loader2 className="h-4 w-4 animate-spin text-primary" />
+      </div>
+    )
+  }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {error && (
-        <div className="p-3 text-sm font-medium text-red-600 bg-red-50 rounded-lg border border-red-100">
+        <div className="p-3 text-sm font-medium text-red-600 bg-red-50 rounded-lg border border-red-100 flex items-center gap-2">
+          <span className="h-1.5 w-1.5 rounded-full bg-red-600 shrink-0" />
           {error}
         </div>
       )}
 
-      {/* Role selector */}
-      <div className="grid grid-cols-2 gap-3">
-        {(['CLIENT', 'VENDOR'] as const).map((r) => (
-          <button
-            key={r}
-            type="button"
-            onClick={() => setRole(r)}
-            className={cn(
-              'rounded-xl border p-3 text-left transition-colors',
-              role === r
-                ? 'border-primary bg-primary/5 text-primary'
-                : 'border-border text-muted-foreground hover:border-primary/50',
-            )}
-          >
-            <p className="font-semibold capitalize text-sm">{r.toLowerCase()}</p>
-            <p className="text-[10px] mt-0.5 opacity-70">
-              {r === 'CLIENT' ? 'Find & book vendors' : 'Offer your services'}
-            </p>
-          </button>
-        ))}
-      </div>
+      {/* NOTE: Role Selector Div removed for project simplification. 
+          All public signups are Clients.
+      */}
 
       <div className="space-y-4">
-        <div>
-          <Label htmlFor="name">Full name</Label>
-          <Input id="name" type="text" value={form.name} onChange={update('name')} placeholder="Your full name" required className="mt-1.5" />
+        <div className="space-y-1.5">
+          <Label htmlFor="name">Full Name</Label>
+          <Input 
+            id="name" 
+            type="text" 
+            value={form.name} 
+            onChange={update('name')} 
+            placeholder="e.g. Stella Nguyo" 
+            required 
+          />
         </div>
 
-        <div>
-          <Label htmlFor="email">Email address</Label>
-          <Input id="email" type="email" value={form.email} onChange={update('email')} placeholder="you@example.com" required className="mt-1.5" />
+        <div className="space-y-1.5">
+          <Label htmlFor="email">Email Address</Label>
+          <Input 
+            id="email" 
+            type="email" 
+            value={form.email} 
+            onChange={update('email')} 
+            placeholder="stella@example.com" 
+            required 
+          />
         </div>
 
-        <div>
-          <Label htmlFor="phone">Phone number</Label>
-          <Input id="phone" type="tel" value={form.phone} onChange={update('phone')} placeholder="+254 700 000 000" className="mt-1.5" />
+        <div className="space-y-1.5">
+          <Label htmlFor="phone">Phone Number (M-Pesa reachable)</Label>
+          <Input 
+            id="phone" 
+            type="tel" 
+            value={form.phone} 
+            onChange={update('phone')} 
+            placeholder="+254 7..." 
+            required 
+          />
         </div>
 
-        <div>
-          <Label htmlFor="password">Password</Label>
-          <div className="relative mt-1.5">
-            <Input id="password" type={showPw ? 'text' : 'password'} value={form.password} onChange={update('password')} placeholder="Min 8 characters" required minLength={8} className="pr-10" />
-            <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+        <div className="space-y-1.5">
+          <Label htmlFor="password">Create Password</Label>
+          <div className="relative">
+            <Input 
+              id="password" 
+              type={showPw ? 'text' : 'password'} 
+              value={form.password} 
+              onChange={update('password')} 
+              placeholder="Min 8 characters" 
+              required 
+              minLength={8} 
+              className="pr-10" 
+            />
+            <button 
+              type="button" 
+              onClick={() => setShowPw(!showPw)} 
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
               {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
         </div>
       </div>
 
-      <Button type="submit" className="w-full" disabled={loading}>
+      <Button type="submit" className="w-full py-6 text-base font-bold" disabled={loading}>
         {loading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Creating account...
+            Setting up your profile...
           </>
         ) : (
-          `Create ${role === 'VENDOR' ? 'Vendor' : 'Client'} Account`
+          "Create Account"
         )}
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
         Already have an account?{' '}
-        <Link href="/auth/login" className="font-medium text-primary hover:underline">
-          Sign in
+        <Link href="/auth/login" className="font-bold text-primary hover:underline">
+          Sign in here
         </Link>
       </p>
     </form>

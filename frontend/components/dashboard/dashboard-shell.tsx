@@ -1,117 +1,125 @@
 'use client'
 
+import React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { 
   LayoutDashboard, 
   Calendar, 
-  Settings, 
-  User, 
+  Search, 
+  Heart, 
   LogOut, 
-  ShieldCheck, 
   Star, 
-  DollarSign, 
-  Briefcase 
+  Home, 
+  ChevronRight
 } from 'lucide-react'
-import { cn } from '@/lib/utils' // Assuming you have a standard shadcn utility for classes
+import { Button } from '@/components/ui/button'
+import { useAuth } from '@/context/auth-context'
+import { cn } from '@/lib/utils'
 
-interface ShellProps {
+interface DashboardShellProps {
   children: React.ReactNode
-  userType: 'client' | 'vendor' | 'admin'
   userName: string
+  userType?: string 
 }
 
-export function DashboardShell({ children, userType, userName }: ShellProps) {
+export function DashboardShell({ children, userName, userType }: DashboardShellProps) {
   const pathname = usePathname()
+  const { logout } = useAuth()
 
-  const menuItems = {
-    client: [
-      { name: 'Overview', href: '/client/dashboard', icon: LayoutDashboard },
-      { name: 'My Bookings', href: '/client/bookings', icon: Calendar },
-      { name: 'Profile', href: '/client/profile', icon: User },
-      { name: 'Settings', href: '/client/settings', icon: Settings },
-    ],
-    vendor: [
-      { name: 'Dashboard', href: '/vendor/dashboard', icon: LayoutDashboard },
-      { name: 'Manage Services', href: '/vendor/services', icon: Star },
-      { name: 'Bookings', href: '/vendor/bookings', icon: Calendar },
-      { name: 'Earnings', href: '/vendor/earnings', icon: DollarSign },
-    ],
-    admin: [
-      { name: 'Stats', href: '/admin/dashboard', icon: LayoutDashboard },
-      { name: 'All Bookings', href: '/admin/bookings', icon: Calendar },
-      { name: 'Vendors', href: '/admin/vendors', icon: ShieldCheck },
-      { name: 'Clients', href: '/admin/clients', icon: User },
-    ],
-  }
+  const navItems = [
+    { name: 'Dashboard', href: '/client/dashboard', icon: LayoutDashboard },
+    { name: 'My Bookings', href: '/client/bookings', icon: Calendar },
+    { name: 'Browse Vendors', href: '/vendors', icon: Search },
+    { name: 'Saved', href: '/client/saved', icon: Heart },
+  ]
 
   return (
-    <div className="flex min-h-screen bg-secondary/20">
+    <div className="flex min-h-screen bg-[#f8f9fa]">
       {/* Sidebar */}
-      <aside className="w-64 bg-card border-r border-border flex flex-col sticky top-0 h-screen">
+      <aside className="w-64 bg-white border-r hidden md:flex flex-col sticky top-0 h-screen shadow-sm">
+        
+        {/* --- VISIBLE HOME BUTTON --- */}
         <div className="p-6">
           <Link href="/">
-            <h2 className="font-serif text-xl font-bold text-primary tracking-tight">Splendour</h2>
+            <div className="flex items-center justify-between w-full p-3 rounded-xl bg-slate-900 hover:bg-slate-800 transition-all shadow-lg group">
+              <div className="flex items-center gap-3">
+                {/* Explicitly setting the icon to a gold/amber color so it pops against the black */}
+                <div className="bg-white/10 p-2 rounded-lg">
+                  <Home className="w-4 h-4 text-amber-500" strokeWidth={2.5} />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs font-black uppercase tracking-widest text-white leading-none">
+                    Home
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-medium">Exit Panel</span>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-white group-hover:translate-x-1 transition-all" />
+            </div>
           </Link>
-          <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground mt-1 opacity-70">
-            {userType} Portal
-          </p>
         </div>
-        
-        <nav className="flex-1 px-4 space-y-1.5">
-          {menuItems[userType].map((item) => {
+
+        {/* Navigation Menu */}
+        <nav className="flex-1 px-4 space-y-1 mt-2">
+          <p className="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4">
+            Main Menu
+          </p>
+          {navItems.map((item) => {
             const isActive = pathname === item.href
             return (
               <Link 
                 key={item.name} 
-                href={item.href} 
+                href={item.href}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200",
+                  "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200",
                   isActive 
-                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/20" 
-                    : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    ? "bg-slate-100 text-slate-900 shadow-sm border border-slate-200/50" 
+                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
                 )}
               >
-                <item.icon className={cn("h-4 w-4", isActive ? "text-primary-foreground" : "text-primary")} />
+                <item.icon className={cn("w-4 h-4", isActive ? "text-slate-900" : "text-slate-400")} />
                 {item.name}
               </Link>
             )
           })}
         </nav>
 
-        <div className="p-4 border-t border-border mt-auto">
-          <div className="flex items-center gap-3 px-4 py-3 mb-2 rounded-xl bg-secondary/40">
-            <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs uppercase">
-              {userName.charAt(0)}
-            </div>
-            <div className="flex flex-col min-w-0">
-              <span className="text-xs font-bold truncate">{userName}</span>
-              <span className="text-[10px] text-muted-foreground capitalize">{userType}</span>
-            </div>
-          </div>
-          
-          <button className="flex w-full items-center gap-3 px-4 py-2 text-sm font-semibold text-red-500 hover:bg-red-50 hover:text-red-600 rounded-xl transition-colors">
-            <LogOut className="h-4 w-4" /> 
-            Log Out
-          </button>
+        {/* Logout Section */}
+        <div className="p-4 border-t border-slate-50">
+          <Button 
+            variant="ghost" 
+            className="w-full justify-start text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all" 
+            onClick={logout}
+          >
+            <LogOut className="w-4 h-4 mr-3" /> 
+            <span className="font-medium text-sm">Sign Out</span>
+          </Button>
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-y-auto">
-        <header className="px-8 py-6 border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-          <div className="flex items-center justify-between">
-            <h1 className="text-xl font-bold tracking-tight text-foreground">
-              Welcome back, <span className="text-primary font-serif italic">{userName}</span>
-            </h1>
-            <div className="flex items-center gap-4">
-              <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Live System</span>
+      {/* Main Content Area */}
+      <main className="flex-1 flex flex-col min-w-0">
+        <header className="h-16 border-b bg-white flex items-center justify-between px-8 sticky top-0 z-10">
+          <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+            <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+            {userType === 'admin' ? 'Admin Control' : 'Client Experience'}
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <div className="text-right hidden sm:block">
+              <p className="text-sm font-bold text-slate-900 leading-none mb-1">{userName}</p>
+              <p className="text-[10px] text-amber-600 font-bold uppercase tracking-widest">
+                {userType === 'admin' ? 'Verified Admin' : 'Premium Member'}
+              </p>
+            </div>
+            <div className="w-10 h-10 rounded-full bg-slate-100 border-2 border-white shadow-sm flex items-center justify-center font-bold text-slate-600 uppercase">
+              {userName ? userName.charAt(0) : 'U'}
             </div>
           </div>
         </header>
-
-        <div className="p-8 max-w-7xl mx-auto">
+        
+        <div className="flex-1 overflow-y-auto">
           {children}
         </div>
       </main>

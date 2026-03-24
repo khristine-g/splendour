@@ -4,11 +4,10 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { ArrowRight, Loader2, Star } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-// 1. Import BOTH the component and the type
 import { VendorCard, type Vendor } from '@/components/vendors/vendor-card'
+import { motion, Variants } from 'framer-motion'
 
 export function FeaturedVendors() {
-  // 2. Set the state type to Vendor[]
   const [vendors, setVendors] = useState<Vendor[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -17,17 +16,15 @@ export function FeaturedVendors() {
       try {
         const response = await fetch('http://localhost:5000/api/vendors')
         if (!response.ok) throw new Error('Failed to fetch')
-        
+
         const data = await response.json()
-        
-        // 3. Filter for featured and cast to the Vendor type
         const featuredData = (data as Vendor[])
           .filter((v) => v.featured)
           .slice(0, 4)
-          
+
         setVendors(featuredData)
       } catch (error) {
-        console.error("Error loading featured vendors:", error)
+        console.error('Error loading featured vendors:', error)
       } finally {
         setLoading(false)
       }
@@ -36,14 +33,49 @@ export function FeaturedVendors() {
     fetchFeatured()
   }, [])
 
+  // Container variants
+  const container: Variants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1, // Slightly faster stagger for better feel
+      },
+    },
+  }
+
+  // Item variants
+  const item: Variants = {
+    hidden: { opacity: 0, y: 30, scale: 0.98 },
+    show: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { duration: 0.5, ease: 'easeOut' },
+    },
+  }
+
   return (
-    <section className="py-24 bg-background">
+    <section className="py-24 bg-background overflow-hidden">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex items-end justify-between">
+
+        {/* Header - Changed once to true */}
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.3 }}
+          variants={{
+            hidden: { opacity: 0, y: 20 },
+            show: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+          }}
+          className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4"
+        >
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-accent">
               <Star className="h-4 w-4 fill-current" />
-              <span className="text-xs font-bold uppercase tracking-widest">Top Rated</span>
+              <span className="text-xs font-bold uppercase tracking-widest">
+                Top Rated
+              </span>
             </div>
             <h2 className="font-serif text-3xl font-bold text-foreground sm:text-4xl tracking-tight">
               Featured Vendors
@@ -52,41 +84,78 @@ export function FeaturedVendors() {
               Hand-picked professionals loved by our community
             </p>
           </div>
-          
-          <Button variant="ghost" className="hidden items-center gap-2 text-primary hover:bg-primary/5 sm:flex" asChild>
-            <Link href="/vendors">
-              Browse All <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
 
+          <div className="hidden sm:flex">
+            <Button
+              variant="ghost"
+              className="group items-center gap-2 text-primary hover:bg-primary/5"
+              asChild
+            >
+              <Link href="/vendors">
+                Browse All 
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </Button>
+          </div>
+        </motion.div>
+
+        {/* Loading State */}
         {loading ? (
           <div className="mt-12 flex h-64 flex-col items-center justify-center rounded-3xl border border-dashed border-border bg-secondary/10">
             <Loader2 className="h-8 w-8 animate-spin text-primary/50" />
-            <p className="mt-4 text-sm text-muted-foreground font-medium">Curating top vendors...</p>
+            <p className="mt-4 text-sm text-muted-foreground font-medium">
+              Curating top vendors...
+            </p>
           </div>
         ) : vendors.length > 0 ? (
-          <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          /* CRITICAL FIX: 
+             Added key={vendors.length} to the motion.div. 
+             This forces Framer Motion to re-run the stagger animation 
+             ONLY after the data has actually loaded.
+          */
+          <motion.div
+            key={vendors.length} 
+            variants={container}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.1 }}
+            className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4"
+          >
             {vendors.map((vendor) => (
-              /* 4. Pass the 'vendor' object to the component. 
-                 The red lines should be gone now! */
-              <VendorCard key={vendor.id} vendor={vendor} />
+              <motion.div
+                key={vendor.id}
+                variants={item}
+                whileHover={{ y: -8 }}
+                className="h-full"
+              >
+                <VendorCard vendor={vendor} />
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         ) : (
-          <div className="mt-12 py-10 text-center border rounded-2xl border-dashed">
-            <p className="text-muted-foreground">No featured vendors found in the database.</p>
+          <div className="mt-12 py-20 text-center border rounded-2xl border-dashed">
+            <p className="text-muted-foreground">
+              No featured vendors found in the database.
+            </p>
           </div>
         )}
 
-        <div className="mt-10 text-center sm:hidden">
+        {/* Mobile Button */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="mt-10 text-center sm:hidden"
+        >
           <Button variant="outline" className="w-full rounded-xl py-6" asChild>
             <Link href="/vendors">
               View All Vendors <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
-        </div>
+        </motion.div>
       </div>
     </section>
   )
 }
+
+

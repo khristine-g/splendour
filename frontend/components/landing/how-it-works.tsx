@@ -1,4 +1,7 @@
+'use client'
+
 import { Search, CalendarCheck, Sparkles } from 'lucide-react'
+import { motion, Variants } from 'framer-motion'
 
 const steps = [
   {
@@ -25,42 +28,116 @@ const steps = [
 ]
 
 export function HowItWorks() {
+
+  // ✅ container animation
+  const container: Variants = {
+    hidden: {},
+    show: {
+      transition: {
+        staggerChildren: 0.2,
+      },
+    },
+  }
+
+  // ✅ each step animation
+  const item: Variants = {
+    hidden: { opacity: 0, y: 50 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: 'easeOut' },
+    },
+  }
+
   return (
     <section id="how-it-works" className="bg-secondary py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <h2 className="font-serif text-3xl font-bold text-foreground text-balance sm:text-4xl">
+
+        {/* Header */}
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: false }}
+          variants={{
+            hidden: { opacity: 0, y: 30 },
+            show: {
+              opacity: 1,
+              y: 0,
+              transition: { duration: 0.6 },
+            },
+          }}
+          className="text-center"
+        >
+          <h2 className="font-serif text-3xl font-bold text-foreground sm:text-4xl">
             How Splendour Works
           </h2>
           <p className="mt-3 text-muted-foreground">
             From discovery to celebration in three simple steps
           </p>
-        </div>
+        </motion.div>
 
-        <div className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-3">
+        {/* Steps */}
+        <motion.div
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: false, margin: '-100px' }}
+          className="mt-16 grid grid-cols-1 gap-10 md:grid-cols-3"
+        >
           {steps.map((step, idx) => (
-            <div key={step.step} className="relative text-center">
-              {/* Connector line */}
+            <motion.div
+              key={step.step}
+              variants={item}
+              className="relative text-center"
+            >
+              {/* Animated connector line */}
               {idx < steps.length - 1 && (
-                <div className="absolute left-1/2 top-10 hidden h-px w-full -translate-y-1/2 border-t-2 border-dashed border-border md:block" />
+                <motion.div
+                  initial={{ width: 0, opacity: 0 }}
+                  whileInView={{ width: '100%', opacity: 1 }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                  viewport={{ once: false }}
+                  className="absolute left-1/2 top-10 hidden h-px -translate-y-1/2 border-t-2 border-dashed border-border md:block"
+                  style={{ transformOrigin: 'left' }}
+                />
               )}
 
-              <div className="relative inline-flex h-20 w-20 items-center justify-center rounded-full border-2 border-accent bg-card shadow-sm">
-                <step.icon className="h-8 w-8 text-accent" />
-                <span className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
-                  {step.step}
-                </span>
-              </div>
+              {/* Icon circle */}
+              <motion.div
+                whileHover={{ scale: 1.08 }}
+                className="relative inline-flex h-20 w-20 items-center justify-center rounded-full border-2 border-accent bg-card shadow-sm"
+              >
+                <motion.div
+                  whileHover={{ rotate: 8 }}
+                  transition={{ type: 'spring', stiffness: 300 }}
+                >
+                  <step.icon className="h-8 w-8 text-accent" />
+                </motion.div>
 
+                {/* Step badge */}
+                <motion.span
+                  initial={{ scale: 0 }}
+                  whileInView={{ scale: 1 }}
+                  transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
+                  viewport={{ once: false }}
+                  className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground"
+                >
+                  {step.step}
+                </motion.span>
+              </motion.div>
+
+              {/* Title */}
               <h3 className="mt-6 font-serif text-xl font-semibold text-foreground">
                 {step.title}
               </h3>
+
+              {/* Description */}
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                 {step.description}
               </p>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   )

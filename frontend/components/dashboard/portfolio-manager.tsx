@@ -1,3 +1,4 @@
+//components/dashboard/portfolio-manager.tsx
 'use client'
 
 import { useState } from 'react'

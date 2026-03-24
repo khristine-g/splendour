@@ -7,16 +7,17 @@ import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useAuth } from '@/context/auth-context' // Import your Auth Context
+import { useAuth } from '@/context/auth-context'
+import { toast } from 'sonner'
 
 export function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPw, setShowPw] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null) // Added for error feedback
+  const [error, setError] = useState<string | null>(null)
   
-  const { login } = useAuth() // Get the login function from context
+  const { login } = useAuth()
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,22 +34,20 @@ export function LoginForm() {
 
       const data = await res.json()
 
-      if (res.ok) {
-        // Update the global auth state
-        login(data.user, data.token) 
+     if (res.ok) {
+  // 1. Sync the auth state
+  login(data.user, data.token)
+  
+  // 2. Show a success message (Optional but recommended for UX)
+  toast.success(`Welcome back, ${data.user.name || 'User'}!`)
 
-        // Personalized Routing based on Role
-        if (data.user.role === 'VENDOR') {
-          router.push('/vendor/dashboard')
-        } else if (data.user.role === 'ADMIN') {
-          router.push('/admin/dashboard')
-        } else {
-          // Send clients to the personalized home page
-          router.push('/')
-        }
-        
-        router.refresh() // Ensures server components update with the new session
-      } else {
+  // 3. Refresh to ensure the Navbar updates (showing logout/profile instead of login)
+  router.refresh()
+
+  // 4. Redirect to Home Page for everyone
+  // No matter if they are ADMIN, VENDOR, or CLIENT
+  router.push('/') 
+} else {
         setError(data.error || 'Invalid email or password')
       }
     } catch (err) {
@@ -62,7 +61,7 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {error && (
-        <div className="p-3 text-sm font-medium text-red-600 bg-red-50 rounded-lg border border-red-100">
+        <div className="p-3 text-sm font-medium text-red-600 bg-red-50 rounded-lg border border-red-100 animate-in fade-in zoom-in-95">
           {error}
         </div>
       )}
@@ -76,14 +75,17 @@ export function LoginForm() {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
           required
-          className="mt-1.5"
+          className="mt-1.5 focus:ring-accent"
         />
       </div>
 
       <div>
         <div className="flex items-center justify-between">
           <Label htmlFor="password">Password</Label>
-          <Link href="/auth/forgot-password" className="text-xs text-primary hover:underline">
+          <Link
+            href="/auth/forgot-password"
+            className="text-xs text-primary opacity-70 hover:underline font-medium"
+          >
             Forgot password?
           </Link>
         </div>
@@ -95,32 +97,36 @@ export function LoginForm() {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
             required
-            className="pr-10"
+            className="pr-10 focus:ring-accent"
           />
           <button
             type="button"
             onClick={() => setShowPw(!showPw)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
           >
             {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
         </div>
       </div>
 
-      <Button type="submit" className="w-full" disabled={loading}>
+      <Button
+        type="submit"
+        className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-6 shadow-lg shadow-primary/10"
+        disabled={loading}
+      >
         {loading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             Signing in...
           </>
         ) : (
-          'Sign In'
+          'Sign In to Splendour'
         )}
       </Button>
 
-      <p className="text-center text-sm text-muted-foreground">
+      <p className="text-center text-sm text-muted-foreground pt-2">
         Don&apos;t have an account?{' '}
-        <Link href="/auth/register" className="font-medium text-primary hover:underline">
+        <Link href="/auth/register" className="font-bold text-accent hover:underline">
           Create one
         </Link>
       </p>
