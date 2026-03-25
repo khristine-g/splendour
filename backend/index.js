@@ -1,6 +1,10 @@
+import 'dotenv/config'; //  This loads your API keys
 import express from 'express';
 import cors from 'cors';
 import { PrismaClient } from '@prisma/client';
+import AfricasTalking from 'africastalking';
+
+
 
 // --- 1. IMPORT ROUTES ---
 import authRoutes from './src/routes/auth.js';
@@ -11,6 +15,49 @@ import paymentRoutes from './src/routes/payment.js'
 
 const prisma = new PrismaClient();
 const app = express();
+
+// --- 2. INITIALIZE AFRICA'S TALKING ---
+const at = AfricasTalking({
+  apiKey: process.env.AT_SANDBOX_API_KEY, 
+  username: 'sandbox' 
+});
+const sms = at.SMS;
+
+// --- SMS HELPER FUNCTION ---
+const sendDemoSMS = async (phone, vendorName, amount) => {
+  try {
+    // 1. Remove any non-numeric characters (spaces, +, etc.)
+    let cleanPhone = phone.replace(/\D/g, '');
+
+    // 2. Standardize to 254 format
+    if (cleanPhone.startsWith('0')) {
+      cleanPhone = '254' + cleanPhone.slice(1);
+    } else if (!cleanPhone.startsWith('254')) {
+      cleanPhone = '254' + cleanPhone;
+    }
+
+    // 3. Final format for AT (Must have exactly ONE +)
+    const formattedPhone = `+${cleanPhone}`;
+
+    console.log(`📡 Sending SMS to: ${formattedPhone}`); // Debug this in terminal!
+
+    const result = await sms.send({
+      to: [formattedPhone],
+      message: `Splendour 🥂: Payment of KES ${amount} for ${vendorName} received! Your booking is now PENDING approval.`,
+      enqueue: true
+    });
+    
+    console.log("📱 SMS Simulator Response:", result.SMSMessageData.Recipients[0].status);
+  } catch (err) {
+    console.error("❌ Africa's Talking Error:", err.message);
+  }
+};
+app.get('/api/test-sms', async (req, res) => {
+  await sendDemoSMS('254725952696', 'Test Vendor', '100');
+  res.send('Check your simulator!');
+});
+
+
 
 // --- 2. MIDDLEWARE ---
 app.use(cors()); 
@@ -175,13 +222,12 @@ app.post('/api/bookings', async (req, res) => {
       }
     });
 
-    // 2. FIND THE ADMIN
-    // This looks for the first user with the role 'ADMIN'
+  
     const adminUser = await prisma.user.findFirst({
       where: { role: 'ADMIN' }
     });
 
-    // 3. SEND NOTIFICATION TO ADMIN
+  
     if (adminUser) {
       await prisma.notification.create({
         data: {
@@ -226,11 +272,10 @@ app.patch('/api/bookings/:id', async (req, res) => {
       data: { status },
       include: {
         service: { select: { title: true } },
-        client: { select: { id: true } } // Get client ID to notify them
+        client: { select: { id: true } } 
       }
     });
 
-    // NOTIFY THE CLIENT OF THE RESULT
     await prisma.notification.create({
       data: {
         userId: updated.clientId,
@@ -252,49 +297,49 @@ app.delete('/api/bookings/:id', async (req, res) => {
     res.status(500).json({ error: "Failed to cancel booking" });
   }
 });
-app.post('/api/payments/create-checkout', async (req, res) => {
-  const { bookingId, amount, email, name } = req.body;
 
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 60000); 
+
+app.post('/api/payments/stk-push', async (req, res) => {
+  const { amount, phone, email, vendorName } = req.body;
+
+  // Clean the IntaSend keys
+  const secretKey = (process.env.INTASEND_SECRET_KEY || "").replace(/[^a-zA-Z0-9-_]/g, "").trim();
+  const publicKey = (process.env.INTASEND_PUBLIC_KEY || "").replace(/[^a-zA-Z0-9-_]/g, "").trim();
 
   try {
-    const response = await fetch("https://sandbox.intasend.com/api/v1/checkout/", {
-  method: "POST",
-  signal: controller.signal,
-  headers: {
-    // Ensure no extra spaces around the key
-    "Authorization": `Bearer ${process.env.INTASEND_SECRET_KEY.trim()}`,
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    public_key: process.env.INTASEND_PUBLIC_KEY.trim(),
-    amount: Number(amount),
-    currency: "KES",
-    email: email || "customer@example.com",
-    first_name: name || "Client",
-    redirect_url: "http://localhost:3000/client/payment-success",
-    method: "MPESA-STK-PUSH",
-    api_ref: bookingId
-  })
-});
+    console.log(`🚀 Triggering STK Push for ${phone}...`);
 
-    clearTimeout(timeoutId);
+    const response = await fetch("https://sandbox.intasend.com/api/v1/payment/mpesa-stk-push/", {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer " + secretKey,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        public_key: publicKey,
+        amount: Number(amount),
+        phone_number: phone, 
+        email: email || "customer@example.com",
+        api_ref: "Booking-" + Date.now() 
+      })
+    });
+
     const data = await response.json();
-    
+
     if (response.ok) {
-      res.json({ url: data.url });
+      console.log("✅ STK Push Initiated:", data);
+
+      // Trigger the SMS Simulator
+      sendDemoSMS(phone, vendorName || 'Vendor', amount);
+
+      res.json({ success: true, message: "Check your phone for the M-Pesa prompt" });
     } else {
-      // LOG THIS: This will show you the exact field IntaSend hates
-      console.log("--- INTASEND REJECTION DETAILS ---");
-      console.log(data); 
-      console.log("----------------------------------");
-      res.status(400).json({ error: "IntaSend rejected request", details: data });
+      console.log("--- STK REJECTION ---", data);
+      res.status(400).json({ error: "STK Push failed", details: data });
     }
   } catch (error) {
-    clearTimeout(timeoutId);
-    console.error("Payment error:", error);
-    res.status(500).json({ error: "Connection failed" });
+    console.error("❌ Connection failed:", error.message);
+    res.status(500).json({ error: "Network Error" });
   }
 });
 // --- 7. ROUTES REGISTRATION ---
@@ -304,4 +349,4 @@ app.use('/api/bookings', bookingRoutes);
 app.use('/api/payments', paymentRoutes);
 
 const PORT = 5000;
-app.listen(PORT, () => console.log(`🚀 Splendour Backend running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(` Splendour Backend running on http://localhost:${PORT}`));
