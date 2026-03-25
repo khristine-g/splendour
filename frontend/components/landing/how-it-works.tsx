@@ -29,7 +29,7 @@ const steps = [
 
 export function HowItWorks() {
 
-  // ✅ container animation
+  
   const container: Variants = {
     hidden: {},
     show: {
@@ -39,7 +39,7 @@ export function HowItWorks() {
     },
   }
 
-  // ✅ each step animation
+  
   const item: Variants = {
     hidden: { opacity: 0, y: 50 },
     show: {
@@ -53,7 +53,6 @@ export function HowItWorks() {
     <section id="how-it-works" className="bg-secondary py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
-        {/* Header */}
         <motion.div
           initial="hidden"
           whileInView="show"
@@ -76,7 +75,7 @@ export function HowItWorks() {
           </p>
         </motion.div>
 
-        {/* Steps */}
+   
         <motion.div
           variants={container}
           initial="hidden"
@@ -90,7 +89,7 @@ export function HowItWorks() {
               variants={item}
               className="relative text-center"
             >
-              {/* Animated connector line */}
+             
               {idx < steps.length - 1 && (
                 <motion.div
                   initial={{ width: 0, opacity: 0 }}
@@ -102,7 +101,6 @@ export function HowItWorks() {
                 />
               )}
 
-              {/* Icon circle */}
               <motion.div
                 whileHover={{ scale: 1.08 }}
                 className="relative inline-flex h-20 w-20 items-center justify-center rounded-full border-2 border-accent bg-card shadow-sm"
@@ -114,7 +112,7 @@ export function HowItWorks() {
                   <step.icon className="h-8 w-8 text-accent" />
                 </motion.div>
 
-                {/* Step badge */}
+               
                 <motion.span
                   initial={{ scale: 0 }}
                   whileInView={{ scale: 1 }}
@@ -126,12 +124,12 @@ export function HowItWorks() {
                 </motion.span>
               </motion.div>
 
-              {/* Title */}
+             
               <h3 className="mt-6 font-serif text-xl font-semibold text-foreground">
                 {step.title}
               </h3>
 
-              {/* Description */}
+             
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                 {step.description}
               </p>

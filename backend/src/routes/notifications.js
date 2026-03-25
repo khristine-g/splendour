@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client';
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// 1. GET count for the bell
+
 router.get('/:userId/count', async (req, res) => {
   try {
     const count = await prisma.notification.count({
@@ -16,7 +16,7 @@ router.get('/:userId/count', async (req, res) => {
   }
 });
 
-// 2. GET all notifications for a user
+
 router.get('/:userId', async (req, res) => {
   try {
     const notifications = await prisma.notification.findMany({
@@ -29,7 +29,7 @@ router.get('/:userId', async (req, res) => {
   }
 });
 
-// 3. PATCH: Mark ONE as read
+
 router.patch('/:id/read', async (req, res) => {
   try {
     const updated = await prisma.notification.update({
@@ -42,7 +42,7 @@ router.patch('/:id/read', async (req, res) => {
   }
 });
 
-// 4. PATCH: Mark ALL as read
+
 router.patch('/:userId/read-all', async (req, res) => {
   try {
     await prisma.notification.updateMany({
@@ -55,7 +55,7 @@ router.patch('/:userId/read-all', async (req, res) => {
   }
 });
 
-// 5. DELETE: Clear all
+
 router.delete('/:userId', async (req, res) => {
   try {
     await prisma.notification.deleteMany({ where: { userId: req.params.userId } });

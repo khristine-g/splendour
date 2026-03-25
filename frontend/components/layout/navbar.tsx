@@ -23,7 +23,7 @@ export function Navbar() {
   
   const { user, logout, loading } = useAuth() 
 
-  // Optimized Dashboard Route Logic
+
   const getDashboardHref = () => {
     if (!user) return '/auth/login'
     switch (user.role) {
@@ -44,7 +44,7 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Logo */}
+      
         <Link href="/" className="flex items-center gap-2 group">
           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary transition-transform group-hover:scale-110">
             <Sparkles className="h-4 w-4 text-accent" />
@@ -53,7 +53,7 @@ export function Navbar() {
         </Link>
        
 
-        {/* Desktop Nav */}
+       
         <nav className="hidden items-center gap-6 md:flex">
           {navLinks.map((link) => (
             <Link
@@ -69,9 +69,9 @@ export function Navbar() {
           ))}
         </nav>
 
-        {/* Actions */}
+     
         <div className="hidden items-center gap-3 md:flex">
-          {/* Notification Bell stays visible for logged-in users */}
+      
           {user && <NotificationBell />}
           
           {loading ? (
@@ -127,13 +127,13 @@ export function Navbar() {
           </Button>
         </div>
 
-        {/* Mobile toggle */}
+      
         <button className="rounded-md p-2 text-foreground md:hidden" onClick={() => setOpen(!open)}>
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
 
-      {/* Mobile menu */}
+     
       {open && (
         <div className="border-t border-border bg-background px-4 py-4 md:hidden animate-in slide-in-from-top-2">
           <nav className="flex flex-col gap-3">

@@ -11,7 +11,7 @@ interface PaymentModalProps {
 }
 
 export default function PaymentModal({ amount, isOpen, onClose, onConfirm }: PaymentModalProps) {
-  const [phone, setPhone] = useState('') // no filler
+  const [phone, setPhone] = useState('') 
   const [loading, setLoading] = useState(false)
 
   if (!isOpen) return null
@@ -36,7 +36,7 @@ export default function PaymentModal({ amount, isOpen, onClose, onConfirm }: Pay
         className="bg-white dark:bg-card w-full max-w-md rounded-3xl shadow-2xl overflow-hidden transform transition-transform duration-300 animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
+        
         <div className="bg-[#00AC4E] p-5 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <div className="bg-white/20 p-2 rounded-lg">
@@ -57,9 +57,9 @@ export default function PaymentModal({ amount, isOpen, onClose, onConfirm }: Pay
           </button>
         </div>
 
-        {/* Body */}
+      
         <div className="p-6 space-y-6">
-          {/* Amount */}
+          
           <div className="text-center">
             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Total Payable</p>
             <div className="text-4xl font-extrabold text-gray-900 dark:text-foreground mt-1">
@@ -68,7 +68,7 @@ export default function PaymentModal({ amount, isOpen, onClose, onConfirm }: Pay
             </div>
           </div>
 
-          {/* Phone Input */}
+          
           <div className="space-y-2">
             <label className="text-xs font-bold text-gray-500 dark:text-muted uppercase tracking-widest">
               Safaricom Phone Number
@@ -88,9 +88,7 @@ export default function PaymentModal({ amount, isOpen, onClose, onConfirm }: Pay
             <p className="text-[10px] text-gray-400 dark:text-muted">The STK prompt will be sent to this number.</p>
           </div>
 
-          {/* Confirm Button */}
-          {/* Confirm Button */}
-          {/* Confirm Button */}
+          
 <button
   onClick={handleSubmit}
   disabled={loading || phone.length < 9}
@@ -109,7 +107,7 @@ export default function PaymentModal({ amount, isOpen, onClose, onConfirm }: Pay
   )}
 </button>
 
-          {/* Trust Footer */}
+         
           <div className="flex flex-col items-center mt-3">
             <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-card rounded-full border border-gray-200 dark:border-border">
               <ShieldCheck size={14} className="text-[#00AC4E]" />
@@ -121,7 +119,7 @@ export default function PaymentModal({ amount, isOpen, onClose, onConfirm }: Pay
         </div>
       </div>
 
-      {/* Modal Animation */}
+    
       <style jsx>{`
         @keyframes scale-in {
           0% { transform: scale(0.8); opacity: 0; }

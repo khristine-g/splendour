@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSearchParams } from 'next/navigation' // To read ?category= from URL
+import { useSearchParams } from 'next/navigation' 
 import { Search, X, Loader2 } from 'lucide-react'
 import { VendorCard } from '@/components/vendors/vendor-card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -10,17 +10,17 @@ import { Button } from '@/components/ui/button'
 export function VendorsListing() {
   const searchParams = useSearchParams()
   
-  // State for data from Backend
+
   const [allVendors, setAllVendors] = useState([])
   const [categories, setCategories] = useState<{name: string}[]>([])
   const [loading, setLoading] = useState(true)
 
-  // State for UI Filters
+  
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState('All')
   const [sortBy, setSortBy] = useState('rating')
 
-  // 1. Initial Data Fetch
+ 
   useEffect(() => {
     const loadInitialData = async () => {
       try {
@@ -35,7 +35,7 @@ export function VendorsListing() {
         setAllVendors(vendorsData)
         setCategories(catsData)
 
-        // 2. Sync category filter with URL if present (e.g., /vendors?category=Photography)
+    
         const urlCat = searchParams.get('category')
         if (urlCat) setCategory(urlCat)
 
@@ -49,7 +49,7 @@ export function VendorsListing() {
     loadInitialData()
   }, [searchParams])
 
-  // 3. Filtering Logic
+ 
   const filtered = allVendors
     .filter((v: any) => {
       const matchSearch = 
@@ -77,7 +77,7 @@ export function VendorsListing() {
 
   return (
     <div className="min-h-screen bg-secondary/30 pb-20">
-      {/* Search Hero */}
+   
       <div className="bg-primary py-16 text-primary-foreground">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h1 className="font-serif text-4xl font-bold sm:text-5xl tracking-tight">Find Vendors</h1>
@@ -104,10 +104,10 @@ export function VendorsListing() {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Filters Toolbar */}
+      
         <div className="mb-10 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           
-          {/* Dynamic Category Pills from DB */}
+         
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setCategory('All')}
@@ -134,7 +134,7 @@ export function VendorsListing() {
             ))}
           </div>
 
-          {/* Sort Menu */}
+          
           <div className="flex items-center gap-3">
             <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Sort By</span>
             <Select value={sortBy} onValueChange={setSortBy}>
@@ -150,7 +150,7 @@ export function VendorsListing() {
           </div>
         </div>
 
-        {/* Grid Section */}
+        
         {filtered.length > 0 ? (
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filtered.map((vendor: any) => (

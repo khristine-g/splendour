@@ -4,7 +4,7 @@ import { verifyToken } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Role Check Middleware
+
 const isAdmin = (req, res, next) => {
   if (req.user.role !== 'ADMIN') {
     return res.status(403).json({ error: "Access denied. Admin role required." });
@@ -12,10 +12,7 @@ const isAdmin = (req, res, next) => {
   next();
 };
 
-/**
- * Objective: Monitoring Activities
- * GET /api/admin/stats
- */
+
 router.get('/stats', verifyToken, isAdmin, async (req, res) => {
   try {
     const [userCount, vendorCount, bookingCount, revenue] = await Promise.all([
@@ -39,9 +36,7 @@ router.get('/stats', verifyToken, isAdmin, async (req, res) => {
   }
 });
 
-/**
- * Objective: Manage Platform (Verify Vendors)
- */
+
 router.patch('/vendors/:id/verify', verifyToken, isAdmin, async (req, res) => {
   try {
     const updated = await prisma.vendor.update({
@@ -55,7 +50,7 @@ router.patch('/vendors/:id/verify', verifyToken, isAdmin, async (req, res) => {
 });
 router.get('/activity', verifyToken, isAdmin, async (req, res) => {
   try {
-    // 1. Fetch the 5 most recent bookings across the WHOLE platform
+
     const recentBookings = await prisma.booking.findMany({
       take: 5,
       orderBy: { createdAt: 'desc' },
@@ -66,7 +61,7 @@ router.get('/activity', verifyToken, isAdmin, async (req, res) => {
       }
     });
 
-    // 2. Fetch the 5 most recent users who signed up
+  
     const recentUsers = await prisma.user.findMany({
       take: 5,
       orderBy: { createdAt: 'desc' },

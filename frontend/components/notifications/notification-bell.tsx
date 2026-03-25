@@ -37,7 +37,7 @@ export function NotificationBell() {
         )} 
       />
       
-      {/* Updated Badge Styling */}
+     
       {count > 0 && (
         <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-[10px] font-black text-slate-950 border-2 border-white shadow-sm animate-in zoom-in">
           {count > 9 ? '9+' : count}

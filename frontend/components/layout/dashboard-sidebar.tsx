@@ -77,7 +77,7 @@ export function DashboardSidebar({ role, userName, userEmail }: DashboardSidebar
         collapsed ? 'w-16' : 'w-64',
       )}
     >
-      {/* Brand */}
+    
       <div className={cn('flex h-16 items-center border-b border-sidebar-border px-4', collapsed && 'justify-center')}>
         {!collapsed ? (
           <Link href="/" className="flex items-center gap-2">
@@ -125,7 +125,7 @@ export function DashboardSidebar({ role, userName, userEmail }: DashboardSidebar
         </ul>
       </nav>
 
-      {/* User section */}
+  
       <div className={cn('border-t border-sidebar-border p-3', collapsed && 'flex justify-center')}>
         {!collapsed ? (
           <div className="flex items-center justify-between">
@@ -144,7 +144,7 @@ export function DashboardSidebar({ role, userName, userEmail }: DashboardSidebar
         )}
       </div>
 
-      {/* Collapse toggle */}
+    
       <button
         onClick={() => setCollapsed(!collapsed)}
         className="flex w-full items-center justify-center border-t border-sidebar-border py-2 text-sidebar-foreground/40 hover:text-sidebar-foreground"

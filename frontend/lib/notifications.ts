@@ -1,4 +1,4 @@
-// Notification types for the event management system
+
 export type NotificationType = 
   | 'booking_confirmed'
   | 'booking_cancelled'
@@ -22,7 +22,7 @@ export interface Notification {
   metadata?: Record<string, any>
 }
 
-// Email notification templates
+
 export const EMAIL_TEMPLATES = {
   booking_confirmed: {
     subject: 'Booking Confirmed - Splendour Events',
@@ -88,7 +88,7 @@ export const EMAIL_TEMPLATES = {
   },
 }
 
-// Mock in-app notifications
+
 export const MOCK_NOTIFICATIONS: Notification[] = [
   {
     id: 'notif-1',
@@ -132,7 +132,7 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
   },
 ]
 
-// Helper functions
+
 export function getNotificationsForUser(userId: string): Notification[] {
   return MOCK_NOTIFICATIONS.filter((n) => n.userId === userId)
 }

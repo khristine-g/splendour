@@ -1,4 +1,3 @@
-// backend/src/routes/auth.js
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -10,11 +9,7 @@ const router = express.Router();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_secret_key';
 
-/**
- * @route   POST /auth/register
- * @desc    Register a new user
- * @access  Public
- */
+
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
@@ -23,12 +18,12 @@ router.post('/login', async (req, res) => {
       where: { email }
     });
 
-    // Simple password check (Note: use bcrypt.compare in production!)
+   
     if (!user || user.password !== password) {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    // Return exactly what the AuthContext expects
+   
     res.json({
       token: "mock-jwt-token-for-now", 
       user: {
@@ -44,7 +39,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// POST: /api/auth/register
+
 router.post('/register', async (req, res) => {
   const { name, email, password, role } = req.body;
 
@@ -56,7 +51,7 @@ router.post('/register', async (req, res) => {
       data: {
         name,
         email,
-        password, // Encrypt this later!
+        password, 
         role: role || 'CLIENT'
       }
     });
@@ -75,28 +70,24 @@ router.post('/register', async (req, res) => {
   }
 });
 
-/**
- * @route   POST /auth/login
- * @desc    Login a user
- * @access  Public
- */
+
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // 1. Find user by email
+   
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    // 2. Compare hashed password
+  
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    // 3. Generate JWT token
+  
     const token = jwt.sign(
       { id: user.id, role: user.role },
       JWT_SECRET,

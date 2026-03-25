@@ -138,7 +138,7 @@ export function BookingForm({ service }: Props) {
       <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
         <StepIndicator currentStep={step} />
 
-        {/* STEP 1 - Event Details */}
+    
         {step === 1 && (
           <div className="grid gap-8 lg:grid-cols-5">
             <div className="lg:col-span-3">
@@ -229,7 +229,7 @@ export function BookingForm({ service }: Props) {
           </div>
         )}
 
-        {/* STEP 2 - Review */}
+       
         {step === 2 && (
           <div className="max-w-2xl mx-auto">
             <Card>
@@ -314,7 +314,7 @@ export function BookingForm({ service }: Props) {
           </div>
         )}
 
-        {/* STEP 3 - Confirmation */}
+     
         {step === 3 && (
           <div className="max-w-lg mx-auto text-center">
             <Card>

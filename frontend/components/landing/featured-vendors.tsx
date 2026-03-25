@@ -33,18 +33,18 @@ export function FeaturedVendors() {
     fetchFeatured()
   }, [])
 
-  // Container variants
+  
   const container: Variants = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1, // Slightly faster stagger for better feel
+        staggerChildren: 0.1, 
       },
     },
   }
 
-  // Item variants
+ 
   const item: Variants = {
     hidden: { opacity: 0, y: 30, scale: 0.98 },
     show: {
@@ -59,7 +59,7 @@ export function FeaturedVendors() {
     <section className="py-24 bg-background overflow-hidden">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
-        {/* Header - Changed once to true */}
+      
         <motion.div
           initial="hidden"
           whileInView="show"
@@ -99,7 +99,7 @@ export function FeaturedVendors() {
           </div>
         </motion.div>
 
-        {/* Loading State */}
+        
         {loading ? (
           <div className="mt-12 flex h-64 flex-col items-center justify-center rounded-3xl border border-dashed border-border bg-secondary/10">
             <Loader2 className="h-8 w-8 animate-spin text-primary/50" />
@@ -108,11 +108,7 @@ export function FeaturedVendors() {
             </p>
           </div>
         ) : vendors.length > 0 ? (
-          /* CRITICAL FIX: 
-             Added key={vendors.length} to the motion.div. 
-             This forces Framer Motion to re-run the stagger animation 
-             ONLY after the data has actually loaded.
-          */
+         
           <motion.div
             key={vendors.length} 
             variants={container}
@@ -140,7 +136,7 @@ export function FeaturedVendors() {
           </div>
         )}
 
-        {/* Mobile Button */}
+      
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}

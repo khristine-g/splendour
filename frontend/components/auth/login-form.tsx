@@ -35,17 +35,16 @@ export function LoginForm() {
       const data = await res.json()
 
      if (res.ok) {
-  // 1. Sync the auth state
+
   login(data.user, data.token)
   
-  // 2. Show a success message (Optional but recommended for UX)
+
   toast.success(`Welcome back, ${data.user.name || 'User'}!`)
 
-  // 3. Refresh to ensure the Navbar updates (showing logout/profile instead of login)
+
   router.refresh()
 
-  // 4. Redirect to Home Page for everyone
-  // No matter if they are ADMIN, VENDOR, or CLIENT
+
   router.push('/') 
 } else {
         setError(data.error || 'Invalid email or password')

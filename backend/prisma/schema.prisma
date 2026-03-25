@@ -23,9 +23,7 @@ model User {
   bookings      Booking[]
   notifications Notification[]
   createdAt     DateTime       @default(now())
-  vendorProfile Vendor?        // Relation to the Vendor profile
 }
-
 model Vendor {
   id              String    @id @default(uuid())
   name            String
@@ -34,41 +32,33 @@ model Vendor {
   description     String
   avatar          String
   coverImage      String
-  rating          Float     @default(0.0)
-  reviewCount     Int       @default(0)
   startingPrice   Int
   location        String
-  verified        Boolean   @default(false)
   featured        Boolean   @default(false)
-  portfolio       String[]
   joinedDate      String
-  completedEvents Int       @default(0)
   
   // Relations
-  user            User      @relation(fields: [id], references: [id], onDelete: Cascade)
   services        Service[]
   bookings        Booking[]
 }
 
+// 3. Service Model
 model Service {
   id          String    @id @default(uuid())
   title       String
   description String
   category    String
   price       Int
-  priceType   String
-  duration    String?
   image       String
-  rating      Float     @default(0.0)
-  reviewCount Int       @default(0)
-  inclusions  String[]
   
-  // Relations
-  vendor      Vendor    @relation(fields: [vendorId], references: [id])
+  // Back-relation to Vendor
+  vendor      Vendor    @relation(fields: [vendorId], references: [id], onDelete: Cascade)
   vendorId    String
-  bookings    Booking[]
-  createdAt   DateTime  @default(now())
+  
+  // Back-relation to Booking (The "Missing Bridge" fix)
+  bookings    Booking[] 
 }
+
 
 model Notification {
   id        String   @id @default(cuid())
@@ -105,5 +95,7 @@ model Booking {
   vendor      Vendor   @relation(fields: [vendorId], references: [id])
   vendorId    String
 
+  // Back-relation to Transaction (The "Missing Bridge" fix)
+  transaction Transaction? 
   createdAt   DateTime @default(now())
 }

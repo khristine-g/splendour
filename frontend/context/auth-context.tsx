@@ -25,7 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
-  // 1. Initialize Auth on page load/refresh
+  
   const initializeAuth = useCallback(() => {
     try {
       const savedUser = localStorage.getItem('user')
@@ -35,10 +35,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const parsedUser = JSON.parse(savedUser)
         setUser(parsedUser)
         
-        // Sync cookie for Middleware/Server-side protection
+      
         Cookies.set('user-role', parsedUser.role, { expires: 7, path: '/' })
       } else {
-        // Cleanup if data is missing
+        
         setUser(null)
         Cookies.remove('user-role', { path: '/' })
       }
@@ -56,19 +56,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     initializeAuth()
   }, [initializeAuth])
 
-  // 2. Login Function
+  
   const login = (userData: User, token: string) => {
-    // Save to LocalStorage for persistence
+   
     localStorage.setItem('user', JSON.stringify(userData))
     localStorage.setItem('token', token)
     
-    // Save to Cookie for Next.js Middleware
+   
     Cookies.set('user-role', userData.role, { expires: 7, path: '/' })
     
-    // Update Global State
+    
     setUser(userData)
 
-    // Redirect based on role immediately
+   
     if (userData.role === 'VENDOR') {
       router.push('/vendor/dashboard')
     } else if (userData.role === 'ADMIN') {
@@ -78,7 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  // 3. Logout Function
+  
   const logout = () => {
     localStorage.removeItem('user')
     localStorage.removeItem('token')

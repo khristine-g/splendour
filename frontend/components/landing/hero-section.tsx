@@ -18,7 +18,7 @@ export function HeroSection() {
     else router.push('/vendors')
   }
 
-  // animation variants
+  
   const fadeUp = {
     hidden: { opacity: 0, y: 30 },
     show: { opacity: 1, y: 0, transition: { duration: 0.6 } },
@@ -35,7 +35,7 @@ export function HeroSection() {
 
   return (
     <section className="relative overflow-hidden bg-primary text-primary-foreground">
-      {/* Background image */}
+     
       <div className="absolute inset-0 opacity-20">
         <Image
           src="https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=1600&q=80"
@@ -54,7 +54,7 @@ export function HeroSection() {
       >
         <div className="mx-auto max-w-3xl text-center">
 
-          {/* Badge */}
+        
           <motion.div
             variants={fadeUp}
             className="mb-4 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-4 py-1.5 text-sm text-accent"
@@ -63,7 +63,7 @@ export function HeroSection() {
             <span>Trusted by 3,000+ clients across Kenya</span>
           </motion.div>
 
-          {/* Heading */}
+         
           <motion.h1
             variants={fadeUp}
             className="font-serif text-4xl font-bold leading-tight text-balance sm:text-5xl lg:text-6xl"
@@ -73,7 +73,7 @@ export function HeroSection() {
             <span className="text-accent">Starts Here</span>
           </motion.h1>
 
-          {/* Paragraph */}
+        
           <motion.p
             variants={fadeUp}
             className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-primary-foreground/80"
@@ -82,7 +82,6 @@ export function HeroSection() {
             decorators, DJs, MCs, and more — all in one place.
           </motion.p>
 
-          {/* Buttons */}
           <motion.div
             variants={fadeUp}
             className="mt-8 flex flex-wrap items-center justify-center gap-3"
@@ -100,7 +99,7 @@ export function HeroSection() {
             </motion.div>
           </motion.div>
 
-          {/* Search */}
+         
           <motion.form
             variants={fadeUp}
             onSubmit={handleSearch}
@@ -127,7 +126,7 @@ export function HeroSection() {
             </motion.div>
           </motion.form>
 
-          {/* Tags */}
+       
           <motion.div
             variants={fadeUp}
             className="mt-8 flex flex-wrap items-center justify-center gap-2"
@@ -149,7 +148,6 @@ export function HeroSection() {
           </motion.div>
         </div>
 
-        {/* Stats */}
         <motion.div
           variants={fadeUp}
           className="mx-auto mt-16 grid max-w-3xl grid-cols-3 divide-x divide-primary-foreground/20"

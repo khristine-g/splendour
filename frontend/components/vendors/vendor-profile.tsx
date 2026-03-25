@@ -13,8 +13,7 @@ import { BookingSection } from './booking-section'
 export function VendorProfile({ vendor }: { vendor: any }) {
   const { user, loading: authLoading } = useAuth()
 
-  // --- SAFETY CHECKS: Extract data from the backend response ---
-  // This ensures that even if 'services' is missing from the JSON, the app doesn't crash.
+ 
   const services = vendor?.services || []
   const portfolio = vendor?.portfolio || []
   const hasPortfolio = portfolio.length > 0
@@ -31,7 +30,7 @@ export function VendorProfile({ vendor }: { vendor: any }) {
 
   return (
     <div className="min-h-screen bg-slate-50/50 pb-20">
-      {/* 1. HEADER / COVER IMAGE */}
+     
       <div className="relative h-64 w-full lg:h-80 xl:h-96">
         <Image
           src={vendor.coverImage || '/placeholder-cover.jpg'}
@@ -44,7 +43,7 @@ export function VendorProfile({ vendor }: { vendor: any }) {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* 2. FLOATING PROFILE INFO CARD */}
+     
         <div className="-mt-24 relative z-20 flex flex-col items-start gap-6 rounded-3xl bg-card p-6 shadow-2xl shadow-primary/5 border border-border lg:flex-row lg:items-center lg:p-10">
           <div className="relative h-32 w-32 shrink-0 overflow-hidden rounded-2xl border-4 border-card shadow-xl bg-muted sm:h-40 sm:w-40">
             <Image 
@@ -87,10 +86,9 @@ export function VendorProfile({ vendor }: { vendor: any }) {
           </div>
         </div>
 
-        {/* 3. MAIN CONTENT TABS */}
+      
         <div className="mt-12 grid grid-cols-1 gap-12 lg:grid-cols-3">
-          
-          {/* LEFT COLUMN: TABS */}
+         
           <div className="lg:col-span-2">
             <Tabs defaultValue="services" className="w-full">
               <TabsList className="h-auto p-0 bg-transparent border-b border-border rounded-none w-full justify-start gap-8 sm:gap-12">
@@ -105,7 +103,7 @@ export function VendorProfile({ vendor }: { vendor: any }) {
                 </TabsTrigger>
               </TabsList>
 
-              {/* TABS CONTENT: SERVICES */}
+              
               <TabsContent value="services" className="py-10 focus-visible:outline-none">
                 {hasServices ? (
                   <div className="grid gap-6 sm:grid-cols-2">
@@ -121,7 +119,7 @@ export function VendorProfile({ vendor }: { vendor: any }) {
                 )}
               </TabsContent>
 
-              {/* TABS CONTENT: PORTFOLIO */}
+            
               <TabsContent value="portfolio" className="py-10 focus-visible:outline-none">
                 {hasPortfolio ? (
                   <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
@@ -145,7 +143,7 @@ export function VendorProfile({ vendor }: { vendor: any }) {
                 )}
               </TabsContent>
 
-              {/* TABS CONTENT: ABOUT */}
+           
               <TabsContent value="about" className="py-10 focus-visible:outline-none">
                 <div className="prose prose-slate max-w-none">
                   <Card className="border-none shadow-none bg-transparent p-0">
@@ -160,7 +158,7 @@ export function VendorProfile({ vendor }: { vendor: any }) {
             </Tabs>
           </div>
 
-          {/* RIGHT COLUMN: BOOKING SIDEBAR */}
+         
           <div className="lg:col-span-1">
             <div className="sticky top-28 space-y-6">
               {user ? (

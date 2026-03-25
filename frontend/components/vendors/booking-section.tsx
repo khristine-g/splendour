@@ -25,14 +25,14 @@ export function BookingSection({ vendor, clientId }: BookingSectionProps) {
   const [error, setError] = useState<string | null>(null)
 
   const handleBooking = async () => {
-    // 1. Ensure user is logged in and has an ID
+
     if (!user || !user.id) {
       setError("Please login to complete your booking.")
       router.push('/auth/login')
       return
     }
 
-    // 2. Ensure all fields are selected
+   
     if (!selectedService || !eventDate) {
       setError("Please pick a service and a valid date.")
       return
@@ -51,9 +51,9 @@ export function BookingSection({ vendor, clientId }: BookingSectionProps) {
           clientId: user.id, 
           vendorId: vendor.id,
           serviceId: selectedService,
-          // SCHEMA FIX: Convert date string to ISO DateTime
+          
           eventDate: new Date(eventDate).toISOString(),
-          // SCHEMA FIX: Ensure price is a Float
+          
           totalAmount: parseFloat(service?.price || 0)
         })
       })
@@ -62,7 +62,7 @@ export function BookingSection({ vendor, clientId }: BookingSectionProps) {
         setBooked(true)
       } else {
         const data = await res.json()
-        // Check specifically for Foreign Key violations
+  
         if (data.error?.includes('Foreign key')) {
           setError("Session Error: Please logout and login again to refresh your account ID.")
         } else {

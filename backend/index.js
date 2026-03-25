@@ -1,4 +1,4 @@
-import 'dotenv/config'; //  This loads your API keys
+import 'dotenv/config'; 
 import express from 'express';
 import cors from 'cors';
 import { PrismaClient } from '@prisma/client';
@@ -6,7 +6,7 @@ import AfricasTalking from 'africastalking';
 
 
 
-// --- 1. IMPORT ROUTES ---
+
 import authRoutes from './src/routes/auth.js';
 import adminRoutes from './src/routes/admin.js';
 import bookingRoutes from './src/routes/booking.js';
@@ -16,30 +16,30 @@ import paymentRoutes from './src/routes/payment.js'
 const prisma = new PrismaClient();
 const app = express();
 
-// --- 2. INITIALIZE AFRICA'S TALKING ---
+
 const at = AfricasTalking({
   apiKey: process.env.AT_SANDBOX_API_KEY, 
   username: 'sandbox' 
 });
 const sms = at.SMS;
 
-// --- SMS HELPER FUNCTION ---
+
 const sendDemoSMS = async (phone, vendorName, amount) => {
   try {
-    // 1. Remove any non-numeric characters (spaces, +, etc.)
+ 
     let cleanPhone = phone.replace(/\D/g, '');
 
-    // 2. Standardize to 254 format
+    
     if (cleanPhone.startsWith('0')) {
       cleanPhone = '254' + cleanPhone.slice(1);
     } else if (!cleanPhone.startsWith('254')) {
       cleanPhone = '254' + cleanPhone;
     }
 
-    // 3. Final format for AT (Must have exactly ONE +)
+
     const formattedPhone = `+${cleanPhone}`;
 
-    console.log(`📡 Sending SMS to: ${formattedPhone}`); // Debug this in terminal!
+    console.log(`📡 Sending SMS to: ${formattedPhone}`); 
 
     const result = await sms.send({
       to: [formattedPhone],
@@ -49,7 +49,7 @@ const sendDemoSMS = async (phone, vendorName, amount) => {
     
     console.log("📱 SMS Simulator Response:", result.SMSMessageData.Recipients[0].status);
   } catch (err) {
-    console.error("❌ Africa's Talking Error:", err.message);
+    console.error(" Africa's Talking Error:", err.message);
   }
 };
 app.get('/api/test-sms', async (req, res) => {
@@ -59,38 +59,38 @@ app.get('/api/test-sms', async (req, res) => {
 
 
 
-// --- 2. MIDDLEWARE ---
+
 app.use(cors()); 
 app.use(express.json()); 
 
-// Register notification routes BEFORE other specific routes
+
 app.use('/api/notifications', notificationRoutes); 
 
-// --- 3. ADMIN COMMAND CENTER ENDPOINTS ---
+
 app.get('/api/admin/stats', async (req, res) => {
   try {
     const [
       userCount, 
       vendorCount, 
       totalBookingCount, 
-      pendingBookingCount, // Specifically for the Sidebar Badge
+      pendingBookingCount, 
       allBookings
     ] = await Promise.all([
       prisma.user.count(),
       prisma.vendor.count(),
       prisma.booking.count(),
-      prisma.booking.count({ where: { status: 'PENDING' } }), // Count only PENDING
+      prisma.booking.count({ where: { status: 'PENDING' } }), 
       prisma.booking.findMany()
     ]);
 
-    // Calculate total revenue from all bookings
+    
     const totalRevenue = allBookings.reduce((sum, b) => sum + (b.totalAmount || 0), 0);
 
     res.json({ 
       users: userCount, 
       vendors: vendorCount, 
-      bookings: pendingBookingCount, // This goes to the Sidebar badge
-      totalBookings: totalBookingCount, // This can be used for the Overview charts
+      bookings: pendingBookingCount, 
+      totalBookings: totalBookingCount,
       revenue: totalRevenue 
     });
   } catch (err) {
@@ -123,7 +123,7 @@ app.get('/api/admin/activity', async (req, res) => {
   }
 });
 
-// --- 4. VENDOR & CATEGORY PUBLIC ROUTES ---
+
 app.get('/api/vendors', async (req, res) => {
   try {
     const vendors = await prisma.vendor.findMany({ include: { services: true } });
@@ -158,7 +158,7 @@ app.get('/api/categories', async (req, res) => {
   }
 });
 
-// --- 5. SERVICE MANAGEMENT ---
+
 app.get('/api/services/:id', async (req, res) => {
   try {
     const service = await prisma.service.findUnique({
@@ -172,25 +172,52 @@ app.get('/api/services/:id', async (req, res) => {
   }
 });
 
-app.post('/api/services', async (req, res) => {
-  const { title, description, price, priceType, category, image, duration, vendorId, inclusions } = req.body;
+app.post('/api/admin/add-vendor', async (req, res) => {
+  const { name, category, location, price, tagline, avatar, cover } = req.body;
+
   try {
-    const newService = await prisma.service.create({
+    const newVendor = await prisma.vendor.create({
       data: {
-        title, description, category,
-        price: parseInt(price),
-        priceType, duration,
-        image: image || "/placeholder-service.jpg",
-        inclusions: inclusions || [],
-        vendorId,
-      },
+        name,
+        category,
+        location,
+        startingPrice: parseInt(price) || 0,
+        tagline,
+        description: tagline, 
+        avatar: avatar || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80",
+        coverImage: cover || "https://images.unsplash.com/photo-1519222970733-f546218fa6d7?w=800&q=80",
+        joinedDate: new Date().toLocaleDateString(),
+        featured: true,
+      }
     });
-    res.status(201).json(newService);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to add service" });
+    res.status(201).json(newVendor);
+  } catch (err) {
+    console.error("Add Vendor Error:", err);
+    res.status(500).json({ error: "Failed to create vendor listing" });
   }
 });
 
+
+app.post('/api/admin/add-service', async (req, res) => {
+  const { vendorId, title, category, price, description, image } = req.body;
+
+  try {
+    const newService = await prisma.service.create({
+      data: {
+        vendorId,
+        title,
+        category,
+        price: parseInt(price),
+        description,
+        image: image || "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800",
+      }
+    });
+    res.status(201).json(newService);
+  } catch (err) {
+    console.error("Add Service Error:", err);
+    res.status(500).json({ error: "Failed to add service" });
+  }
+});
 app.delete('/api/services/:id', async (req, res) => {
   try {
     await prisma.booking.deleteMany({ where: { serviceId: req.params.id } });
@@ -201,16 +228,16 @@ app.delete('/api/services/:id', async (req, res) => {
   }
 });
 
-// --- 6. BOOKING MANAGEMENT ---
+
 app.post('/api/bookings', async (req, res) => {
   const { clientId, vendorId, serviceId, eventDate, totalAmount } = req.body;
   
   try {
-    // 1. Create the booking
+    
     const booking = await prisma.booking.create({
       data: {
         clientId,
-        vendorId, // Keeping vendorId so your schema doesn't break
+        vendorId, 
         serviceId,
         eventDate: new Date(eventDate),
         totalAmount: parseFloat(totalAmount),
@@ -302,12 +329,12 @@ app.delete('/api/bookings/:id', async (req, res) => {
 app.post('/api/payments/stk-push', async (req, res) => {
   const { amount, phone, email, vendorName } = req.body;
 
-  // Clean the IntaSend keys
+  
   const secretKey = (process.env.INTASEND_SECRET_KEY || "").replace(/[^a-zA-Z0-9-_]/g, "").trim();
   const publicKey = (process.env.INTASEND_PUBLIC_KEY || "").replace(/[^a-zA-Z0-9-_]/g, "").trim();
 
   try {
-    console.log(`🚀 Triggering STK Push for ${phone}...`);
+    console.log(` Triggering STK Push for ${phone}...`);
 
     const response = await fetch("https://sandbox.intasend.com/api/v1/payment/mpesa-stk-push/", {
       method: "POST",
@@ -327,9 +354,9 @@ app.post('/api/payments/stk-push', async (req, res) => {
     const data = await response.json();
 
     if (response.ok) {
-      console.log("✅ STK Push Initiated:", data);
+      console.log(" STK Push Initiated:", data);
 
-      // Trigger the SMS Simulator
+      
       sendDemoSMS(phone, vendorName || 'Vendor', amount);
 
       res.json({ success: true, message: "Check your phone for the M-Pesa prompt" });
@@ -338,11 +365,11 @@ app.post('/api/payments/stk-push', async (req, res) => {
       res.status(400).json({ error: "STK Push failed", details: data });
     }
   } catch (error) {
-    console.error("❌ Connection failed:", error.message);
+    console.error(" Connection failed:", error.message);
     res.status(500).json({ error: "Network Error" });
   }
 });
-// --- 7. ROUTES REGISTRATION ---
+
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/bookings', bookingRoutes);

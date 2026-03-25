@@ -6,15 +6,15 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 
-// Note: We no longer import the 'vendors' array from mock-data
-// because the vendor is now nested inside the service object from the DB.
+
+
 
 interface ServiceDetailProps {
-  service: any // Use your Service type, but ensure it includes the vendor object
+  service: any 
 }
 
 export function ServiceDetail({ service }: ServiceDetailProps) {
-  // Prisma returns the vendor as a nested object: service.vendor
+ 
   const vendor = service.vendor;
 
   const priceLabel =
@@ -36,7 +36,7 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
         </Link>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          {/* Main content */}
+        
           <div className="lg:col-span-2 space-y-6">
             <div className="relative h-72 w-full overflow-hidden rounded-2xl sm:h-96">
               <Image
@@ -94,7 +94,7 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
               </CardContent>
             </Card>
 
-            {/* What's included */}
+        
             <Card>
               <CardContent className="p-6">
                 <h2 className="font-serif text-lg font-semibold text-foreground">
@@ -111,7 +111,6 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
               </CardContent>
             </Card>
 
-            {/* Client Reviews - Updated for Database Vendor structure */}
             {vendor?.reviews && (
               <Card>
                 <CardContent className="p-6">
@@ -119,8 +118,7 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
                     Client Reviews
                   </h2>
                   <div className="mt-4 space-y-4">
-                    {/* Note: In a real DB, you'd fetch reviews separately, 
-                        but if they are in your seed data, we map them here */}
+                
                     {vendor.reviews.slice(0, 3).map((review: any) => (
                       <div key={review.id} className="flex items-start gap-3 border-b border-border pb-4 last:border-0 last:pb-0">
                         <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full">
@@ -145,7 +143,7 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
             )}
           </div>
 
-          {/* Booking sidebar */}
+       
           <div className="lg:sticky lg:top-6 h-fit space-y-4">
             <Card className="border-2 border-primary shadow-lg">
               <CardContent className="p-6">

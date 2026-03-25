@@ -6,7 +6,7 @@ import { ArrowRight, Store } from 'lucide-react'
 import { motion, Variants } from 'framer-motion'
 
 export function CtaSection() {
-  // Animation variants
+  
   const container: Variants = {
     hidden: { opacity: 0 },
     show: {
@@ -32,12 +32,12 @@ export function CtaSection() {
         variants={container}
         initial="hidden"
         whileInView="show"
-        viewport={{ once: false, amount: 0.2 }} // 🔹 animates when 20% of section is visible
+        viewport={{ once: false, amount: 0.2 }} 
         className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
       >
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:items-center">
 
-          {/* LEFT SIDE */}
+         
           <motion.div variants={item}>
             <h2 className="font-serif text-3xl font-bold sm:text-4xl text-foreground">
               Planning an event?
@@ -60,7 +60,6 @@ export function CtaSection() {
             </motion.div>
           </motion.div>
 
-          {/* RIGHT CARD */}
           <motion.div
             variants={item}
             whileHover={{ y: -6 }}

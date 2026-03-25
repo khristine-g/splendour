@@ -7,11 +7,10 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('🇰🇪 Seeding Splendour database with full Schema compliance...')
   
-  // 1. Create a common hashed password for all test accounts
-  // Password will be: password123
+ 
   const hashedPassword = await bcrypt.hash('password123', 10)
 
-  // 2. Clear existing data in correct dependency order to avoid Foreign Key errors
+ 
   await prisma.booking.deleteMany({})
   await prisma.service.deleteMany({})
   await prisma.vendor.deleteMany({})
@@ -19,7 +18,7 @@ async function main() {
 
   
 
-  // 4. Kenyan Vendor Data Setup
+  
   const vendorData = [
     { 
       name: 'Safari Lens Photography', 
@@ -104,7 +103,7 @@ async function main() {
   ]
 
   for (const v of vendorData) {
-    // A. Create Vendor User (The Login Account)
+ 
     const user = await prisma.user.create({
       data: {
         name: v.name,
@@ -115,11 +114,10 @@ async function main() {
       },
     })
 
-    // B. Create Vendor Profile (The Dashboard Identity)
-    // We set the ID manually to match the User ID
+   
     const vendor = await prisma.vendor.create({
       data: {
-        id: user.id, // CRITICAL LINK
+        id: user.id, 
         name: v.name,
         category: v.category,
         tagline: v.tagline,
@@ -138,7 +136,7 @@ async function main() {
       },
     })
 
-    // C. Create a Default Service for this Vendor
+ 
     await prisma.service.create({
       data: {
         title: `Elite ${v.category} Package`,
@@ -155,7 +153,7 @@ async function main() {
     })
   }
 
-  console.log('✅ Success! Database seeded. Use "password123" for all accounts.')
+  console.log(' Success! Database seeded. Use "password123" for all accounts.')
 }
 
 main()

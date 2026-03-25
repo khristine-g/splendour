@@ -12,9 +12,6 @@ import { toast } from 'sonner'
 export function RegisterForm() {
   const { login } = useAuth()
   
-  // CAPSTONE SIMPLIFICATION: 
-  // Public registration is now only for CLIENTS. 
-  // Admins are created via seed, and Vendors are managed by Admin.
   const role = 'CLIENT'
   
   const [form, setForm] = useState({ name: '', email: '', password: '', phone: '' })
@@ -37,7 +34,7 @@ export function RegisterForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...form,
-          role, // Hardcoded to 'CLIENT'
+          role, 
         }),
       })
 
@@ -50,7 +47,7 @@ export function RegisterForm() {
       setIsSuccess(true)
       toast.success("Account created successfully!")
 
-      // Sync global auth state and redirect
+      
       login(data.user, data.token)
 
     } catch (err: any) {
@@ -84,9 +81,7 @@ export function RegisterForm() {
         </div>
       )}
 
-      {/* NOTE: Role Selector Div removed for project simplification. 
-          All public signups are Clients.
-      */}
+    
 
       <div className="space-y-4">
         <div className="space-y-1.5">

@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 
-// 1. Export the interface so the Parent can import it
+
 export interface Vendor {
   id: string
   name: string
@@ -23,13 +23,12 @@ export interface Vendor {
   featured: boolean
 }
 
-// 2. Define the props for this component
 interface VendorCardProps {
   vendor: Vendor
 }
 
 export function VendorCard({ vendor }: VendorCardProps) {
-  // Defensive check
+ 
   if (!vendor) return null
 
   return (

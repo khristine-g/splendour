@@ -6,7 +6,7 @@ router.post('/create-checkout', async (req, res) => {
   const { bookingId, amount, email, name } = req.body;
 
   try {
-    // 1. Call Payment Gateway API (e.g., Intasend)
+   
     const response = await fetch("https://payment.intasend.com/api/v1/checkout/", {
       method: "POST",
       headers: { 
@@ -25,7 +25,7 @@ router.post('/create-checkout', async (req, res) => {
 
     const data = await response.json();
 
-    // 2. Save Pending Transaction in DB
+  
     await prisma.transaction.create({
       data: {
         bookingId,
@@ -34,7 +34,7 @@ router.post('/create-checkout', async (req, res) => {
       }
     });
 
-    res.json({ url: data.url }); // Send the checkout link to frontend
+    res.json({ url: data.url });
   } catch (error) {
     res.status(500).json({ error: "Payment initiation failed" });
   }
@@ -42,26 +42,26 @@ router.post('/create-checkout', async (req, res) => {
 router.post('/webhook', async (req, res) => {
   const { invoice_id, state, challenge } = req.body;
 
-  // 1. Verify the payment state
+
   if (state === 'COMPLETE') {
-    // 2. Find the transaction and update it
+ 
     const transaction = await prisma.transaction.update({
       where: { providerRef: invoice_id },
       data: { status: 'SUCCESS' },
       include: { booking: true }
     });
 
-    // 3. Mark the booking as PAID
+    
     await prisma.booking.update({
       where: { id: transaction.bookingId },
       data: { status: 'PAID' }
     });
 
-    // 4. Notify the Admin that money has arrived!
+   
     await prisma.notification.create({
       data: {
         userId: 'ADMIN_ID',
-        title: "Payment Received! 💰",
+        title: "Payment Received! ",
         message: `KSh ${transaction.amount} received for Booking #${transaction.bookingId.slice(-5)}`
       }
     });

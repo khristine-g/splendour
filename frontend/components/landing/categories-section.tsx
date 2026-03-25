@@ -52,7 +52,7 @@ export function CategoriesSection() {
       })
   }, [])
 
-  // ✅ Variants (typed)
+ 
   const container: Variants = {
     hidden: {},
     show: {
@@ -87,11 +87,11 @@ export function CategoriesSection() {
     <section className="relative py-24 bg-gradient-to-b from-background to-secondary/40">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
-        {/* Header */}
+    
         <motion.div
           initial="hidden"
           whileInView="show"
-          viewport={{ once: false }} // ✅ animate every time
+          viewport={{ once: false }} 
           variants={{
             hidden: { opacity: 0, y: 30 },
             show: {
@@ -110,12 +110,12 @@ export function CategoriesSection() {
           </p>
         </motion.div>
 
-        {/* Grid */}
+      
         <motion.div
           variants={container}
           initial="hidden"
           whileInView="show"
-          viewport={{ once: false, margin: '-100px' }} // ✅ re-triggers on scroll
+          viewport={{ once: false, margin: '-100px' }} 
           className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-5"
         >
           {categories.map((cat) => {
@@ -137,10 +137,10 @@ export function CategoriesSection() {
                       'hover:border-accent/60 hover:shadow-xl hover:shadow-accent/10'
                     )}
                   >
-                    {/* Glow */}
+                   
                     <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition duration-300 bg-accent/5" />
 
-                    {/* Icon */}
+                   
                     <motion.div
                       whileHover={{ rotate: 6, scale: 1.1 }}
                       transition={{ type: 'spring', stiffness: 300 }}
@@ -149,7 +149,7 @@ export function CategoriesSection() {
                       <Icon className="h-7 w-7" />
                     </motion.div>
 
-                    {/* Text */}
+                   
                     <div className="relative z-10 text-center">
                       <p className="text-sm font-semibold tracking-tight">
                         {cat.name}

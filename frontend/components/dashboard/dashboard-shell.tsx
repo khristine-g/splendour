@@ -36,15 +36,15 @@ export function DashboardShell({ children, userName, userType }: DashboardShellP
 
   return (
     <div className="flex min-h-screen bg-[#f8f9fa]">
-      {/* Sidebar */}
+     
       <aside className="w-64 bg-white border-r hidden md:flex flex-col sticky top-0 h-screen shadow-sm">
         
-        {/* --- VISIBLE HOME BUTTON --- */}
+        
         <div className="p-6">
           <Link href="/">
             <div className="flex items-center justify-between w-full p-3 rounded-xl bg-slate-900 hover:bg-slate-800 transition-all shadow-lg group">
               <div className="flex items-center gap-3">
-                {/* Explicitly setting the icon to a gold/amber color so it pops against the black */}
+       
                 <div className="bg-white/10 p-2 rounded-lg">
                   <Home className="w-4 h-4 text-amber-500" strokeWidth={2.5} />
                 </div>
@@ -60,7 +60,7 @@ export function DashboardShell({ children, userName, userType }: DashboardShellP
           </Link>
         </div>
 
-        {/* Navigation Menu */}
+      
         <nav className="flex-1 px-4 space-y-1 mt-2">
           <p className="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4">
             Main Menu
@@ -85,7 +85,7 @@ export function DashboardShell({ children, userName, userType }: DashboardShellP
           })}
         </nav>
 
-        {/* Logout Section */}
+       
         <div className="p-4 border-t border-slate-50">
           <Button 
             variant="ghost" 
@@ -98,7 +98,7 @@ export function DashboardShell({ children, userName, userType }: DashboardShellP
         </div>
       </aside>
 
-      {/* Main Content Area */}
+  
       <main className="flex-1 flex flex-col min-w-0">
         <header className="h-16 border-b bg-white flex items-center justify-between px-8 sticky top-0 z-10">
           <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">

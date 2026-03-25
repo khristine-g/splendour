@@ -48,7 +48,7 @@ export function PortfolioManager({ vendorId, initialImages, onUpdate }: Portfoli
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Add Image Input */}
+  
         <div className="flex gap-2">
           <Input 
             placeholder="Paste image URL..." 
@@ -60,7 +60,7 @@ export function PortfolioManager({ vendorId, initialImages, onUpdate }: Portfoli
           </Button>
         </div>
 
-        {/* Image Grid */}
+       
         <div className="grid grid-cols-3 gap-2">
           {initialImages.map((img, index) => (
             <div key={index} className="group relative aspect-square overflow-hidden rounded-lg border bg-muted">

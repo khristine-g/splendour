@@ -4,20 +4,16 @@ import { verifyToken } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-/**
- * @route   GET /api/bookings/vendor
- * @desc    Fetch bookings for the logged-in vendor.
- * Tries to match by vendorId directly or via the Vendor record.
- */
+
 router.get('/vendor', verifyToken, async (req, res) => {
   try {
     const bookings = await prisma.booking.findMany({
       where: {
         OR: [
-          { vendorId: req.user.id }, // Strategy A: User ID is the Vendor ID
+          { vendorId: req.user.id },
           { 
             vendor: {
-              // Strategy B: Find bookings where the vendor record matches the User ID
+            
               id: req.user.id 
             } 
           }
@@ -34,7 +30,7 @@ router.get('/vendor', verifyToken, async (req, res) => {
       orderBy: { eventDate: 'asc' }
     });
     
-    console.log(`✅ Vendor ${req.user.id} accessed dashboard. Found ${bookings.length} bookings.`);
+    console.log(` Vendor ${req.user.id} accessed dashboard. Found ${bookings.length} bookings.`);
     res.json(bookings);
   } catch (error) {
     console.error("Fetch Vendor Bookings Error:", error);
@@ -42,9 +38,7 @@ router.get('/vendor', verifyToken, async (req, res) => {
   }
 });
 
-/**
- * @route   PATCH /api/bookings/:id/status
- */
+
 router.patch('/:id/status', verifyToken, async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
@@ -64,9 +58,7 @@ router.patch('/:id/status', verifyToken, async (req, res) => {
   }
 });
 
-/**
- * @route   GET /api/bookings/client/:id
- */
+
 router.get('/client/:id', async (req, res) => {
   try {
     const bookings = await prisma.booking.findMany({
@@ -83,9 +75,7 @@ router.get('/client/:id', async (req, res) => {
   }
 });
 
-/**
- * @route   POST /api/bookings
- */
+
 router.post('/', async (req, res) => {
   const { clientId, vendorId, serviceId, eventDate, totalAmount } = req.body;
   try {
@@ -105,9 +95,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-/**
- * @route   DELETE /api/bookings/:id
- */
+
 router.delete('/:id', async (req, res) => {
   try {
     await prisma.booking.delete({ where: { id: req.params.id } });

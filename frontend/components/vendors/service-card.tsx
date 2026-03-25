@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 
 export function ServiceCard({ service }: { service: any }) {
-  // Use a fallback for vendor data to prevent red lines/crashes
+
   const vendorName = service.vendor?.name || "Service Provider"
   const vendorAvatar = service.vendor?.avatar || "/placeholder-avatar.png"
 

@@ -1,4 +1,4 @@
-//app/admin/dashboard/page.tsx
+// app/admin/dashboard/page.tsx
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
@@ -10,7 +10,8 @@ import {
   Activity, RefreshCw, UserPlus, PackagePlus, Trash2, XCircle
 } from 'lucide-react'
 import { toast } from 'sonner'
-import { AddServiceModal } from '@/components/dashboard/add-service-modal'
+// Ensure this path matches your folder structure exactly
+import { AddVendorModal } from '@/components/dashboard/add-vendor-modal'
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<any>({ users: 0, vendors: 0, bookings: 0, revenue: 0 })
@@ -40,8 +41,7 @@ export default function AdminDashboard() {
   }, []);
 
   const handleDeleteVendor = async (id: string, name: string) => {
-    if (!confirm(`Permanently remove ${name}? This deletes all their services and bookings.`)) return;
-    
+    if (!confirm(`Permanently remove ${name}?`)) return;
     try {
       const res = await fetch(`http://localhost:5000/api/vendors/${id}`, { method: 'DELETE' });
       if (res.ok) {
@@ -54,13 +54,12 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteService = async (serviceId: string, serviceTitle: string) => {
-    if (!confirm(`Delete the service "${serviceTitle}"?`)) return;
-
+    if (!confirm(`Delete service "${serviceTitle}"?`)) return;
     try {
       const res = await fetch(`http://localhost:5000/api/services/${serviceId}`, { method: 'DELETE' });
       if (res.ok) {
         toast.success("Service removed");
-        fetchData(); // Refresh list
+        fetchData(); 
       }
     } catch (err) {
       toast.error("Failed to delete service");
@@ -79,8 +78,8 @@ export default function AdminDashboard() {
   return (
     <div className="p-6 md:p-10 space-y-10 max-w-7xl mx-auto">
       
-      {/* Header */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      {/* --- HEADER --- */}
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-6">
         <div>
           <h1 className="text-3xl font-serif font-bold italic text-slate-900">Admin Overview</h1>
           <p className="text-slate-500 text-sm flex items-center gap-2">
@@ -88,13 +87,20 @@ export default function AdminDashboard() {
             Live Platform Monitor
           </p>
         </div>
-        <Button onClick={fetchData} variant="outline" disabled={isRefreshing} className="bg-white">
-          <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-          Refresh Data
-        </Button>
+        <div className="flex items-center gap-3">
+          {/* This button is now wrapped in a div to ensure flex layout doesn't squash it */}
+          <div className="shrink-0">
+            <AddVendorModal onSuccess={fetchData} />
+          </div>
+          
+          <Button onClick={fetchData} variant="outline" disabled={isRefreshing} className="bg-white">
+            <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+        </div>
       </header>
 
-      {/* Quick Stats */}
+      {/* --- QUICK STATS --- */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <QuickStat title="Total Revenue" value={`KSh ${stats.revenue.toLocaleString()}`} icon={<DollarSign className="text-green-600" />} />
         <QuickStat title="Total Users" value={stats.users} icon={<Users className="text-blue-600" />} />
@@ -102,7 +108,7 @@ export default function AdminDashboard() {
         <QuickStat title="Bookings" value={stats.bookings} icon={<Calendar className="text-orange-600" />} />
       </div>
 
-      {/* Inventory Management */}
+      {/* --- INVENTORY --- */}
       <section className="space-y-6">
         <div className="flex items-center gap-2 text-slate-400">
             <PackagePlus className="w-5 h-5" />
@@ -113,10 +119,14 @@ export default function AdminDashboard() {
           {vendors.map((vendor) => (
             <Card key={vendor.id} className="border-none shadow-sm bg-white overflow-hidden group border-t-4 border-t-primary/20">
               <CardContent className="p-0">
-                {/* Vendor Header */}
                 <div className="p-5 flex items-center justify-between border-b border-slate-50">
                   <div className="flex items-center gap-3">
-                    <img src={vendor.avatar || "/placeholder-avatar.jpg"} alt="" className="w-10 h-10 rounded-full object-cover ring-2 ring-slate-100" />
+                    {/* FIXED: Fallback avatar image */}
+                    <img 
+                      src={vendor.avatar || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80"} 
+                      alt="" 
+                      className="w-10 h-10 rounded-full object-cover ring-2 ring-slate-100" 
+                    />
                     <div>
                       <p className="font-bold text-slate-800 leading-none">{vendor.name}</p>
                       <Badge variant="secondary" className="text-[9px] mt-1 h-4 uppercase">{vendor.category}</Badge>
@@ -127,7 +137,6 @@ export default function AdminDashboard() {
                   </Button>
                 </div>
 
-                {/* Service List */}
                 <div className="p-4 space-y-2 max-h-48 overflow-y-auto bg-slate-50/30">
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Active Services</p>
                   {vendor.services?.length > 0 ? (
@@ -136,7 +145,7 @@ export default function AdminDashboard() {
                         <span className="text-xs font-medium text-slate-700 truncate mr-2">{svc.title}</span>
                         <button 
                           onClick={() => handleDeleteService(svc.id, svc.title)}
-                          className="opacity-0 group-item-hover:opacity-100 text-slate-400 hover:text-red-500 transition-opacity"
+                          className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500 transition-opacity"
                         >
                           <XCircle className="w-3.5 h-3.5" />
                         </button>
@@ -146,17 +155,12 @@ export default function AdminDashboard() {
                     <p className="text-[10px] italic text-slate-400">No services listed</p>
                   )}
                 </div>
-
-                <div className="p-4 border-t border-slate-50 bg-white">
-                  <AddServiceModal vendorId={vendor.id} onSuccess={fetchData} />
-                </div>
               </CardContent>
             </Card>
           ))}
         </div>
       </section>
 
-      {/* Live Feeds */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <FeedCard title="New Registrations" icon={<UserPlus className="text-blue-500" />} items={activity.users} />
         <FeedCard title="Live Booking Stream" icon={<Activity className="text-primary" />} items={activity.bookings} isBooking />
@@ -191,7 +195,7 @@ function FeedCard({ title, icon, items, isBooking }: any) {
         {items.length > 0 ? items.map((item: any) => (
           <div key={item.id} className="p-3 bg-slate-50/50 rounded-lg border border-slate-100 text-sm">
             {isBooking ? (
-              <p className="text-slate-700"><b>{item.client?.name}</b> booked <b>{item.service?.title}</b> <span className="text-slate-400 italic">from {item.vendor?.name}</span></p>
+              <p className="text-slate-700"><b>{item.client?.name}</b> booked <b>{item.service?.title}</b></p>
             ) : (
               <div className="flex justify-between items-center">
                 <span className="font-bold text-slate-700">{item.name}</span>
