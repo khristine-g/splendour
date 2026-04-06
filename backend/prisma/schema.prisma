@@ -25,21 +25,23 @@ model User {
   createdAt     DateTime       @default(now())
 }
 model Vendor {
-  id              String    @id @default(uuid())
-  name            String
-  category        String
-  tagline         String
-  description     String
-  avatar          String
-  coverImage      String
-  startingPrice   Int
-  location        String
-  featured        Boolean   @default(false)
-  joinedDate      String
-  
+  id            String    @id @default(uuid())
+  name          String
+  category      String
+  tagline       String
+  description   String
+  avatar        String
+  coverImage    String
+  startingPrice Int
+  location      String
+  verified      Boolean   @default(false) // Added this
+  featured      Boolean   @default(false)
+  portfolio     String[]                  // Added this (PostgreSQL supports String arrays)
+  joinedDate    DateTime  @default(now())
+
   // Relations
-  services        Service[]
-  bookings        Booking[]
+  services      Service[]
+  bookings      Booking[]
 }
 
 // 3. Service Model

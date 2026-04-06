@@ -86,7 +86,7 @@ export function AddVendorModal({ onSuccess, vendorId }: AddVendorModalProps) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
  
-        <Button className="bg-slate-800 hover:bg-slate-900 text-white gap-2 shadow-md relative z-10">
+        <Button className="bg-black-800 hover:bg-slate-900 text-black gap-2 shadow-md relative z-10">
           <Plus className="h-4 w-4" /> 
           {vendorId ? "Add New Service" : "Onboard New Vendor"}
         </Button>
