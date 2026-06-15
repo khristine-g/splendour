@@ -60,8 +60,13 @@ app.get('/api/test-sms', async (req, res) => {
 
 
 
-app.use(cors()); 
+app.use(cors({
+  origin: [process.env.FRONTEND_URL, 'http://localhost:3000'],
+  credentials: true
+}));
 app.use(express.json()); 
+
+
 
 
 app.use('/api/notifications', notificationRoutes); 
