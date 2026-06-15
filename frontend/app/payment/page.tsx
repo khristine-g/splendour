@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
-import { PaymentFlow } from '@/components/payments/payment-flow'
+
 import { Spinner } from '@/components/ui/spinner'
 
 export const metadata = {
@@ -19,7 +19,7 @@ export default function PaymentPage() {
             <Spinner className="h-8 w-8" />
           </div>
         }>
-          <PaymentFlow />
+         
         </Suspense>
       </main>
       <Footer />
