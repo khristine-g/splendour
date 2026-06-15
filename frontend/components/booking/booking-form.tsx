@@ -1,4 +1,3 @@
-//app/client/bookings/page.tsx
 'use client'
 
 import { useState } from 'react'
