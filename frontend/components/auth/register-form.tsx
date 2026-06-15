@@ -11,9 +11,9 @@ import { toast } from 'sonner'
 
 export function RegisterForm() {
   const { login } = useAuth()
-  
+
   const role = 'CLIENT'
-  
+
   const [form, setForm] = useState({ name: '', email: '', password: '', phone: '' })
   const [showPw, setShowPw] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -29,14 +29,17 @@ export function RegisterForm() {
     setError(null)
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...form,
-          role, 
-        }),
-      })
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...form,
+            role,
+          }),
+        }
+      )
 
       const data = await res.json()
 
@@ -47,9 +50,7 @@ export function RegisterForm() {
       setIsSuccess(true)
       toast.success("Account created successfully!")
 
-      
       login(data.user, data.token)
-
     } catch (err: any) {
       console.error("Signup error:", err.message)
       setError(err.message)
@@ -66,7 +67,9 @@ export function RegisterForm() {
           <CheckCircle2 className="h-6 w-6 text-green-600" />
         </div>
         <h2 className="text-xl font-bold">Welcome to Splendour!</h2>
-        <p className="text-muted-foreground text-sm">Redirecting you to your dashboard...</p>
+        <p className="text-muted-foreground text-sm">
+          Redirecting you to your dashboard...
+        </p>
         <Loader2 className="h-4 w-4 animate-spin text-primary" />
       </div>
     )
@@ -81,61 +84,59 @@ export function RegisterForm() {
         </div>
       )}
 
-    
-
       <div className="space-y-4">
         <div className="space-y-1.5">
           <Label htmlFor="name">Full Name</Label>
-          <Input 
-            id="name" 
-            type="text" 
-            value={form.name} 
-            onChange={update('name')} 
-            placeholder="e.g. Stella Nguyo" 
-            required 
+          <Input
+            id="name"
+            type="text"
+            value={form.name}
+            onChange={update('name')}
+            placeholder="e.g. Stella Nguyo"
+            required
           />
         </div>
 
         <div className="space-y-1.5">
           <Label htmlFor="email">Email Address</Label>
-          <Input 
-            id="email" 
-            type="email" 
-            value={form.email} 
-            onChange={update('email')} 
-            placeholder="stella@example.com" 
-            required 
+          <Input
+            id="email"
+            type="email"
+            value={form.email}
+            onChange={update('email')}
+            placeholder="stella@example.com"
+            required
           />
         </div>
 
         <div className="space-y-1.5">
           <Label htmlFor="phone">Phone Number (M-Pesa reachable)</Label>
-          <Input 
-            id="phone" 
-            type="tel" 
-            value={form.phone} 
-            onChange={update('phone')} 
-            placeholder="+254 7..." 
-            required 
+          <Input
+            id="phone"
+            type="tel"
+            value={form.phone}
+            onChange={update('phone')}
+            placeholder="+254 7..."
+            required
           />
         </div>
 
         <div className="space-y-1.5">
           <Label htmlFor="password">Create Password</Label>
           <div className="relative">
-            <Input 
-              id="password" 
-              type={showPw ? 'text' : 'password'} 
-              value={form.password} 
-              onChange={update('password')} 
-              placeholder="Min 8 characters" 
-              required 
-              minLength={8} 
-              className="pr-10" 
+            <Input
+              id="password"
+              type={showPw ? 'text' : 'password'}
+              value={form.password}
+              onChange={update('password')}
+              placeholder="Min 8 characters"
+              required
+              minLength={8}
+              className="pr-10"
             />
-            <button 
-              type="button" 
-              onClick={() => setShowPw(!showPw)} 
+            <button
+              type="button"
+              onClick={() => setShowPw(!showPw)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
             >
               {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -144,7 +145,11 @@ export function RegisterForm() {
         </div>
       </div>
 
-      <Button type="submit" className="w-full py-6 text-base font-bold" disabled={loading}>
+      <Button
+        type="submit"
+        className="w-full py-6 text-base font-bold"
+        disabled={loading}
+      >
         {loading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

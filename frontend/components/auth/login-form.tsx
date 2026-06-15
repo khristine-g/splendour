@@ -16,7 +16,7 @@ export function LoginForm() {
   const [showPw, setShowPw] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  
+
   const { login } = useAuth()
   const router = useRouter()
 
@@ -26,27 +26,25 @@ export function LoginForm() {
     setError(null)
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      })
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        }
+      )
 
       const data = await res.json()
 
-     if (res.ok) {
+      if (res.ok) {
+        login(data.user, data.token)
 
-  login(data.user, data.token)
-  
+        toast.success(`Welcome back, ${data.user.name || 'User'}!`)
 
-  toast.success(`Welcome back, ${data.user.name || 'User'}!`)
-
-
-  router.refresh()
-
-
-  router.push('/') 
-} else {
+        router.refresh()
+        router.push('/')
+      } else {
         setError(data.error || 'Invalid email or password')
       }
     } catch (err) {

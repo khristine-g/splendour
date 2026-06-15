@@ -1,3 +1,4 @@
+// app/vendor/dashboard/page.tsx
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
@@ -7,10 +8,12 @@ import { AddVendorModal } from '@/components/dashboard/add-vendor-modal'
 import { PortfolioManager } from '@/components/dashboard/portfolio-manager'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { DollarSign, Users, Star, Package, Loader2, Trash2, XCircle } from 'lucide-react'
+import { DollarSign, Users, Star, Package, Loader2, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/context/auth-context' 
 import { toast } from 'sonner'
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 interface Service {
   id: string
@@ -36,7 +39,6 @@ export default function VendorDashboard() {
   const [vendorData, setVendorData] = useState<VendorData | null>(null)
   const [loading, setLoading] = useState(true)
 
-  // 1. Role Security
   useEffect(() => {
     if (!authLoading && (!user || user.role !== 'VENDOR')) {
       router.push('/auth/login')
@@ -44,12 +46,11 @@ export default function VendorDashboard() {
     }
   }, [user, authLoading, router])
 
-  // 2. Fetch function
   const fetchVendorDetails = useCallback(async () => {
     if (!vendorId) return
 
     try {
-      const response = await fetch(`http://localhost:5000/api/vendors/${vendorId}`)
+      const response = await fetch(`${API_URL}/api/vendors/${vendorId}`)
       
       if (response.status === 404) {
         setLoading(false)
@@ -76,13 +77,13 @@ export default function VendorDashboard() {
     if (!confirm("Are you sure you want to remove this service?")) return
 
     try {
-      const res = await fetch(`http://localhost:5000/api/services/${serviceId}`, {
+      const res = await fetch(`${API_URL}/api/services/${serviceId}`, {
         method: 'DELETE',
       })
 
       if (res.ok) {
         toast.success("Service removed")
-        fetchVendorDetails() 
+        fetchVendorDetails()
       }
     } catch (error) {
       toast.error("Failed to delete service")
@@ -124,7 +125,7 @@ export default function VendorDashboard() {
 
       <div className="mt-8 grid gap-8 lg:grid-cols-5">
         
-        {/* Left Column: Management */}
+        {/* Left Column */}
         <div className="lg:col-span-2 space-y-8">
           <Card className="border-none shadow-sm bg-white">
             <CardHeader>
@@ -132,7 +133,6 @@ export default function VendorDashboard() {
               <p className="text-xs text-muted-foreground">List a new package for clients to book.</p>
             </CardHeader>
             <CardContent>
-              {/* FIXED: Passing vendorId and onSuccess correctly */}
               {vendorId ? (
                 <AddVendorModal 
                   vendorId={vendorId} 
@@ -153,7 +153,7 @@ export default function VendorDashboard() {
           />
         </div>
         
-        {/* Right Column: Listings */}
+        {/* Right Column */}
         <div className="lg:col-span-3">
           <Card className="border-none shadow-sm h-full bg-white">
             <CardHeader className="border-b border-slate-50">
@@ -167,6 +167,7 @@ export default function VendorDashboard() {
                 </Badge>
               </div>
             </CardHeader>
+
             <CardContent className="pt-6">
               {vendorData?.services && vendorData.services.length > 0 ? (
                 <div className="space-y-4">
@@ -186,6 +187,7 @@ export default function VendorDashboard() {
                           {service.description || 'No description provided.'}
                         </p>
                       </div>
+
                       <div className="flex items-center gap-6">
                         <div className="text-right">
                           <span className="font-black text-primary text-sm block">
@@ -195,6 +197,7 @@ export default function VendorDashboard() {
                             {service.priceType.replace('_', ' ')}
                           </span>
                         </div>
+
                         <Button 
                           variant="ghost" 
                           size="icon" 

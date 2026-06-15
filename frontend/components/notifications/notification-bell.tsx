@@ -15,7 +15,9 @@ export function NotificationBell() {
 
     const fetchNotificationCount = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/notifications/${user.id}/count`)
+    const res = await fetch(
+  `${process.env.NEXT_PUBLIC_API_URL}/api/notifications/${user.id}/count`
+)
         const data = await res.json()
         setCount(data.count || 0)
       } catch (err) {

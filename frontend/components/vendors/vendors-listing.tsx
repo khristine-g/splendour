@@ -22,32 +22,31 @@ export function VendorsListing() {
 
  
   useEffect(() => {
-    const loadInitialData = async () => {
-      try {
-        const [vendorsRes, catsRes] = await Promise.all([
-          fetch('http://localhost:5000/api/vendors'),
-          fetch('http://localhost:5000/api/categories')
-        ])
+  const loadInitialData = async () => {
+    try {
+      const [vendorsRes, catsRes] = await Promise.all([
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/vendors`),
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`)
+      ])
 
-        const vendorsData = await vendorsRes.json()
-        const catsData = await catsRes.json()
+      const vendorsData = await vendorsRes.json()
+      const catsData = await catsRes.json()
 
-        setAllVendors(vendorsData)
-        setCategories(catsData)
+      setAllVendors(vendorsData)
+      setCategories(catsData)
 
-    
-        const urlCat = searchParams.get('category')
-        if (urlCat) setCategory(urlCat)
+      const urlCat = searchParams.get('category')
+      if (urlCat) setCategory(urlCat)
 
-      } catch (error) {
-        console.error("Failed to sync with database:", error)
-      } finally {
-        setLoading(false)
-      }
+    } catch (error) {
+      console.error("Failed to sync with database:", error)
+    } finally {
+      setLoading(false)
     }
+  }
 
-    loadInitialData()
-  }, [searchParams])
+  loadInitialData()
+}, [searchParams])
 
  
   const filtered = allVendors

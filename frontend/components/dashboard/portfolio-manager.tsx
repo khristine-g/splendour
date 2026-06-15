@@ -22,11 +22,14 @@ export function PortfolioManager({ vendorId, initialImages, onUpdate }: Portfoli
     if (!url) return
     setLoading(true)
     try {
-      const res = await fetch(`http://localhost:5000/api/vendors/${vendorId}/portfolio`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageUrl: url })
-      })
+    const res = await fetch(
+  `${process.env.NEXT_PUBLIC_API_URL}/api/vendors/${vendorId}/portfolio`,
+  {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ imageUrl: url })
+  }
+)
 
       if (res.ok) {
         setUrl('')

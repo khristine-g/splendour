@@ -40,8 +40,8 @@ export function AddVendorModal({ onSuccess, vendorId }: AddVendorModalProps) {
 
  
     const url = vendorId 
-      ? 'http://localhost:5000/api/admin/add-service' 
-      : 'http://localhost:5000/api/admin/add-vendor';
+  ? `${process.env.NEXT_PUBLIC_API_URL}/api/admin/add-service`
+  : `${process.env.NEXT_PUBLIC_API_URL}/api/admin/add-vendor`;
 
 
     const submissionData = vendorId ? {

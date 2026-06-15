@@ -44,19 +44,19 @@ export function BookingSection({ vendor, clientId }: BookingSectionProps) {
     const service = vendor.services?.find((s: any) => s.id === selectedService)
 
     try {
-      const res = await fetch('http://localhost:5000/api/bookings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          clientId: user.id, 
-          vendorId: vendor.id,
-          serviceId: selectedService,
-          
-          eventDate: new Date(eventDate).toISOString(),
-          
-          totalAmount: parseFloat(service?.price || 0)
-        })
-      })
+     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bookings`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    clientId: user.id,
+    vendorId: vendor.id,
+    serviceId: selectedService,
+
+    eventDate: new Date(eventDate).toISOString(),
+
+    totalAmount: parseFloat(service?.price || 0)
+  })
+})
 
       if (res.ok) {
         setBooked(true)

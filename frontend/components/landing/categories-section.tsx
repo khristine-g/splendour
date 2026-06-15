@@ -36,21 +36,21 @@ export function CategoriesSection() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/categories')
-      .then((res) => {
-        if (!res.ok) throw new Error('Network response was not ok')
-        return res.json()
-      })
-      .then((data) => {
-        setCategories(data)
-        setLoading(false)
-      })
-      .catch((err) => {
-        console.error('Error fetching categories:', err)
-        setCategories([])
-        setLoading(false)
-      })
-  }, [])
+  fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`)
+    .then((res) => {
+      if (!res.ok) throw new Error('Network response was not ok')
+      return res.json()
+    })
+    .then((data) => {
+      setCategories(data)
+      setLoading(false)
+    })
+    .catch((err) => {
+      console.error('Error fetching categories:', err)
+      setCategories([])
+      setLoading(false)
+    })
+}, [])
 
  
   const container: Variants = {
