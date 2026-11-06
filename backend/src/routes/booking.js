@@ -1,3 +1,4 @@
+//backend/src/routes/booking.js
 import express from 'express';
 import { prisma } from '../../prisma.config.js';
 import { verifyToken } from '../middleware/authMiddleware.js';
